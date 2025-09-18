@@ -34,6 +34,7 @@ class Register(BaseModel):
     username: str
     password: str
     role: str 
+    school: str
     
 @app.post("/login")
 async def handle_login(data:Login):
@@ -54,7 +55,7 @@ async def handle_register(data:Register):
         return {"message": "User Already Registered"}
     else:
         password = pass_context.hash(data.password)
-        add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role})
+        add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role, "school": data.school})
         return {"message": "User Registered Sucessfully"}
 
 class AI_request(BaseModel):

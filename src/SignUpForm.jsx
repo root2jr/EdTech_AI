@@ -6,6 +6,7 @@ const SignUpForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [school, setSchool] = useState('');
     const [role, setRole] = useState('Student'); // Default role
     const navigate = useNavigate();
     const handleSubmit = async (event) => {
@@ -15,10 +16,12 @@ const SignUpForm = () => {
             return;
         }
         try {
-            const response = await axios.post("http://127.0.0.1:8000/sign-in", {
+            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/sign-in", {
                 username: username,
                 password: password,
-                role: role
+                role: role, 
+                school: school
+
             });
             if(response.data.message == "User Registered Sucessfully"){
                 navigate("/mainpage")
@@ -61,6 +64,16 @@ const SignUpForm = () => {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="confirm-password">School Name</label>
+                <input
+                    id="confirm-password"
+                    type="text"
+                    value={school}
+                    onChange={(e) => setSchool(e.target.value)}
                     required
                 />
             </div>

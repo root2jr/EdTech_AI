@@ -52,7 +52,7 @@ const LessonPage = () => {
                     {lesson.summary.split('\n').map((paragraph, index) => (
                         <p key={index}>{paragraph}</p>
                     ))}
-                    <button onClick={() => {navigate("/mcq")}}>Read</button>
+                    <button onClick={() => {navigate("/mcq")}}>Completed</button>
                 </div>
             </div>
 

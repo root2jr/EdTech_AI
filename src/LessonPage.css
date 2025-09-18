@@ -1,0 +1,129 @@
+/* --- Use Same Theme Variables --- */
+:root {
+    --bg-color: #f5f5f7;
+    --surface-color: #ffffff;
+    --primary-text-color: #1d1d1f;
+    --secondary-text-color: #6e6e73;
+    --border-color: #e5e5e7;
+    --accent-color: #000000;
+}
+
+/* --- Lesson Page Layout --- */
+.lesson-page-container {
+    font-family: 'Inter', sans-serif;
+    padding: 1.5rem;
+    max-width: 900px; /* Constrain content width */
+    margin: 0 auto;
+    background-color: var(--bg-color);
+    position: relative; /* For floating button positioning */
+    min-height: calc(100vh - 60px - 70px); /* Account for TopNav and BottomNav */
+}
+
+/* --- Video Player Section --- */
+.lesson-video-player {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    background-color: #000; /* Placeholder background */
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.lesson-video-player iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+}
+
+/* --- Lesson Content (Summary) --- */
+.lesson-content {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.lesson-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-text-color);
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+}
+.lesson-summary button{
+    padding:20px;
+    border-radius: 10px;
+    background-color: var(--accent-color);
+    border:none;
+    color:white;
+    font-weight: 600;
+    cursor:pointer;
+    align-self: flex-end;
+}
+.lesson-summary button:hover{
+    background-color: var(--secondary-text-color);
+    transition: .5s ease;
+}
+.lesson-summary{
+    position: relative;
+}
+.lesson-summary h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.lesson-summary p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--secondary-text-color);
+    margin-bottom: 1rem;
+    white-space: wrap;
+}
+
+.lesson-summary p:last-of-type {
+    margin-bottom: 0;
+}
+
+/* --- Floating Action Button (Ask AI) --- */
+.ask-ai-fab {
+    position: fixed;
+    bottom: 20px; /* Adjust based on BottomNav height + desired spacing */
+    right: 20px;
+    background-color: var(--accent-color);
+    color: var(--surface-color);
+    border: none;
+    border-radius: 30px; /* Oval shape */
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 999; /* Ensure it stays above other content */
+}
+
+.ask-ai-fab:hover {
+    background-color: #333;
+    transform: translateY(-3px); /* Subtle lift effect */
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+}
+
+.ask-ai-fab svg {
+    font-size: 1.2rem;
+}

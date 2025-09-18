@@ -1,0 +1,152 @@
+/* Import a sharp, professional font for better UI readability */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- Root Variables for a Classy Monochrome Theme --- */
+:root {
+    --bg-color: #f5f5f7; /* A soft off-white, used by Apple */
+    --surface-color: #ffffff; /* Crisp white for the form card */
+    --primary-text-color: #1d1d1f; /* A near-black for high contrast */
+    --secondary-text-color: #6e6e73; /* Muted grey for labels and paragraphs */
+    --border-color: #d2d2d7;
+    --accent-color: #000000; /* Pure black for buttons and highlights */
+}
+
+/* --- Base & Body Styles --- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* --- Main Container & Wrapper Card --- */
+.auth-container {
+    padding: 2rem;
+}
+
+.form-wrapper {
+    background: var(--surface-color);
+    padding: 2.5rem 3rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); /* Softer, more modern shadow */
+    width: 100%;
+    max-width: 420px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Add a subtle "lift" on hover for a premium feel */
+.form-wrapper:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Header --- */
+.form-header {
+    text-align: center;
+    margin-bottom: 2.5rem; /* More breathing room */
+}
+
+.form-header h1 {
+    color: var(--primary-text-color);
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: -0.5px; /* Tighter letter spacing for headlines */
+}
+
+.form-header p {
+    color: var(--secondary-text-color);
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* --- Form Elements --- */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Consistent spacing between form groups */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: var(--secondary-text-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase; /* Professional touch for labels */
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    background-color: #fcfcfc;
+    color: var(--primary-text-color);
+    transition: all 0.2s ease-in-out;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-text-color);
+    background-color: var(--surface-color);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05); /* Focus ring */
+}
+
+/* --- Submit Button --- */
+.submit-btn {
+    background-color: var(--accent-color);
+    color: var(--surface-color);
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover {
+    background-color: #333; /* Slightly lighter black on hover */
+    transform: scale(1.02);
+}
+
+/* --- Toggle Form Link --- */
+.toggle-form {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.toggle-form p {
+    color: var(--secondary-text-color);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.toggle-form span {
+    color: var(--primary-text-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.toggle-form span:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}

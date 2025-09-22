@@ -9,6 +9,8 @@ import AIChatPage from './AIChatPage'
 import AnalyticsPage from './AnalyticsPage'
 import LessonPage from './LessonPage'
 import MCQPage from './MCQPage'
+import ManageClassPage from './ManageClassPage'
+import CreateLessonPage from './CreateLessonPage'
 
 function App() {
 
@@ -23,6 +25,8 @@ function App() {
         <Route path="/lesson" element={<LessonPage />} />
         <Route path="/ai" element={<AIChatPage />} />
         <Route path="/mcq" element={<MCQPage />} />
+        <Route path="/manageclass" element={<ManageClassPage />} />
+        <Route path="/createlesson" element={<CreateLessonPage />} />
       </Routes>
     </BrowserRouter>
   )

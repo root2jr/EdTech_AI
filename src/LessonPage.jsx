@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import { FiMessageCircle } from 'react-icons/fi'; // For the floating AI button
 import './LessonPage.css';
+import axios from 'axios';
 
 const LessonPage = () => {
     const navigate = useNavigate(); // Hook to programmatically navigate
-
-    // Mock lesson data (in a real app, this would come from props or a state management system)
-    const lesson = {
+    const [lesson, setLesson] = useState({
         id: 'L001',
         title: 'Introduction to Classical Mechanics',
         videoUrl: "https://www.youtube.com/embed/H5FAxTBuNM8?si=1xWZPf5CAc_8iwUl", // Example YouTube embed
@@ -24,7 +23,25 @@ const LessonPage = () => {
             Understanding classical mechanics is crucial for advanced studies in physics and engineering, forming the bedrock upon which more complex theories (like quantum mechanics and relativity) are built. This module aims to equip students with the analytical tools to solve basic problems involving forces and motion.
         `,
         // You could also add topics, questions, etc.
-    };
+    });
+
+    useEffect(() => {
+        const find_Lesson = async () => {
+            const lessonData = localStorage.getItem("lesson");
+            console.log(lessonData);
+            try {
+                const response = await axios.post("http://127.0.0.1:8000/findlesson", {
+                    lesson: lessonData
+                })
+                console.log(response.data);
+                setLesson(response.data.message);
+
+            } catch (error) {
+                console.error("Error finding lesson data:", error);
+            }
+        }
+        find_Lesson();
+    }, [])
 
     const handleAskAI = () => {
         // Navigate to the AI chat page, potentially with some context/prompt pre-filled
@@ -36,7 +53,7 @@ const LessonPage = () => {
             <div className="lesson-video-player">
                 {/* Responsive embed for YouTube, Vimeo, etc. */}
                 <iframe
-                    src={lesson.videoUrl}
+                    src={lesson.url}
                     title={lesson.title}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -52,7 +69,7 @@ const LessonPage = () => {
                     {lesson.summary.split('\n').map((paragraph, index) => (
                         <p key={index}>{paragraph}</p>
                     ))}
-                    <button onClick={() => {navigate("/mcq")}}>Completed</button>
+                    <button onClick={() => { navigate("/mcq") }}>Completed</button>
                 </div>
             </div>
 

@@ -1,20 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LessonSkeleton from './LessonSkeleton';
 import "./StudentDashboard.css"
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const StudentDashboard = ({ isLoading }) => {
     // State to manage the active view: 'lessons' or 'classes'
     const [activeView, setActiveView] = useState('lessons');
     const navigate = useNavigate();
-
-    // --- MOCK DATA ---
-    const lessons = [
+    const [lessons, setLessons] = useState([
         { id: 1, title: 'Introduction to Algebra', subject: 'Mathematics', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Algebra' },
         { id: 2, title: 'The Laws of Motion', subject: 'Physics', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Physics' },
         { id: 3, title: 'Cellular Biology Basics', subject: 'Biology', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Biology' },
         { id: 4, title: 'Shakespearean Sonnets', subject: 'Literature', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Literature' },
-    ];
+    ]);
+
+    useEffect(() => {
+        const fetch_lessons = async () => {
+            try {
+                const response = await axios.get("http://127.0.0.1:8000/fetchlesson");
+                console.log(response.data);
+                setLessons(prev => [...prev, ...response.data.message])
+
+            }
+            catch (error) {
+                console.error("Error fetching lessons:", error);
+            }
+        }
+
+        fetch_lessons();
+    }, [])
+
+    // --- MOCK DATA ---
 
     const classes = [
         { id: 'C101', name: 'Grade 10 - Physics', teacher: 'Dr. Evelyn Reed', progress: 75 },
@@ -38,7 +55,7 @@ const StudentDashboard = ({ isLoading }) => {
                     <div className="card-content">
                         <h3>{lesson.title}</h3>
                         <p>{lesson.subject}</p>
-                        <button className="card-button" onClick={() => {navigate("/lesson")}}>Start Lesson</button>
+                        <button className="card-button" onClick={() => { navigate("/lesson"); localStorage.setItem("lesson",lesson.title) }}>Start Lesson</button>
                     </div>
                 </div>
             ));

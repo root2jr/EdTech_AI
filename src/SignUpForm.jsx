@@ -7,7 +7,7 @@ const SignUpForm = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [school, setSchool] = useState('');
-    const [role, setRole] = useState('Student'); // Default role
+    const [role, setRole] = useState('Student');
     const navigate = useNavigate();
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -16,7 +16,7 @@ const SignUpForm = () => {
             return;
         }
         try {
-            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/sign-in", {
+            const response = await axios.post("http://127.0.0.1:8000/sign-in", {
                 username: username,
                 password: password,
                 role: role, 
@@ -32,7 +32,6 @@ const SignUpForm = () => {
             console.error("Error:", error);
         }
 
-        console.log('Signing up with:', { username, password, role });
     };
 
     return (

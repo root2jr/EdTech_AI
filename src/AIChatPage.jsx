@@ -9,7 +9,7 @@ import { FiHome, FiBarChart2, FiCpu, FiUser } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
 
-const AIChatPage = () => {
+const AIChatPage = ({state}) => {
     const navigate = useNavigate();
     const [messages, setMessages] = useState([
         {
@@ -50,10 +50,9 @@ const AIChatPage = () => {
         setInputValue('');
         setIsTyping(true);
 
-        // Simulate AI response
         setTimeout(async () => {
-            const airesponse = await axios.post(" https://edtech-ai-mc8u.onrender.com/ai", {
-                prompt: inputValue,
+            const airesponse = await axios.post("http://127.0.0.1:8000/ai", {
+                prompt: "Doubt:"+ state + inputValue,
                 username: "jram6269@gmail.com",
                 time: "12:00am"
             })

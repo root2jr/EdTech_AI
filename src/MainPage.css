@@ -209,3 +209,97 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+
+/* --- ADD THESE STYLES TO YOUR MainPage.css FILE --- */
+
+/* --- Teacher Dashboard Header & Button --- */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.create-class-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background-color: var(--accent-color);
+    color: var(--surface-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.create-class-button:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+}
+
+/* --- Teacher's Class Card Grid Layout --- */
+.teacher-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* --- Redesigned Teacher Class Card --- */
+.teacher-class-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ensures thumbnail corners are rounded */
+}
+
+.teacher-class-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.07);
+}
+
+.teacher-class-card .card-thumbnail {
+    position: relative; /* For positioning the subject tag */
+}
+
+.class-subject-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background-color: rgba(29, 29, 31, 0.7); /* Semi-transparent background */
+    backdrop-filter: blur(5px);
+    color: var(--surface-color);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* --- Stats and Progress Inside the Card --- */
+.class-stats {
+    display: flex;
+    gap: 1rem;
+    color: var(--secondary-text-color);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.class-progress {
+    margin-top: auto; /* Push progress to the bottom of its section */
+    margin-bottom: 1.5rem;
+}

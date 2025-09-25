@@ -300,6 +300,7 @@
 }
 
 .class-progress {
-    margin-top: auto; /* Push progress to the bottom of its section */
+    margin-top: auto;
     margin-bottom: 1.5rem;
 }
+

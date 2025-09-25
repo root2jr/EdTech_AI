@@ -27,11 +27,11 @@ const LessonPage = () => {
 
     useEffect(() => {
         const find_Lesson = async () => {
-            const lessonData = localStorage.getItem("lesson");
+            const lessonData = JSON.parse(localStorage.getItem("lesson"));
             console.log(lessonData);
             try {
                 const response = await axios.post("http://127.0.0.1:8000/findlesson", {
-                    lesson: lessonData
+                    lesson: String(lessonData._id)
                 })
                 console.log(response.data);
                 setLesson(response.data.message);
@@ -44,8 +44,14 @@ const LessonPage = () => {
     }, [])
 
     const handleAskAI = () => {
-        // Navigate to the AI chat page, potentially with some context/prompt pre-filled
-        navigate('/ai', { state: { initialPrompt: `Can you explain more about ${lesson.title}?` } });
+        navigate('/ai', {
+            state: {
+                lessonContext: {
+                    title: lesson.title,
+                    summary: lesson.summary
+                }
+            }
+        });
     };
 
     return (
@@ -65,15 +71,39 @@ const LessonPage = () => {
                 <h1 className="lesson-title">{lesson.title}</h1>
                 <div className="lesson-summary">
                     <h3>Lesson Summary</h3>
-                    {/* Render summary content, preserving newlines for readability */}
-                    {lesson.summary.split('\n').map((paragraph, index) => (
-                        <p key={index}>{paragraph}</p>
-                    ))}
+                    {lesson.summary.split('\n').map((line, index) => {
+                        const trimmed = line.trim();
+
+                        // Full heading (line is only **something**)
+                        if (/^\*\*.*\*\*$/.test(trimmed)) {
+                            return <h4 key={index}>{trimmed.replace(/\*\*/g, '')}</h4>;
+                        }
+
+                        // Bullet points
+                        if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+                            return <li key={index}>{trimmed.replace(/^[-*]\s*/, '')}</li>;
+                        }
+
+                        // Inline bold anywhere in the line
+                        const withBold = trimmed.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                                return <strong key={i}>{part.replace(/\*\*/g, '')}</strong>;
+                            }
+                            return part;
+                        });
+
+                        // Default paragraph
+                        if (trimmed.length > 0) {
+                            return <p key={index}>{withBold}</p>;
+                        }
+
+                        return null;
+                    })}
                     <button onClick={() => { navigate("/mcq") }}>Completed</button>
                 </div>
+
             </div>
 
-            {/* Floating Action Button for AI chat */}
             <button className="ask-ai-fab" onClick={handleAskAI}>
                 <FiMessageCircle />
                 <span>Ask AI</span>

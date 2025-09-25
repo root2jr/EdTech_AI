@@ -1,4 +1,0 @@
-Front-End, Backend and Database 
-FrontEnd -> React,
-Backend -> Python -> FastAPI 
-Is my screen visible? 

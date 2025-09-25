@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import './MCQPage.css';
 import { useNavigate } from 'react-router-dom';
 
-// Mock Data for the Quiz
-const quizQuestions = [
+
+
+
+const MCQPage = () => {
+    const [quizQuestions, setQuizQuestions] = useState([
     {
         id: 1,
         question: "What is the powerhouse of the cell?",
@@ -35,9 +38,18 @@ const quizQuestions = [
         options: ["Ag", "Au", "Pb", "Fe"],
         answer: "Au"
     }
-];
+]);
 
-const MCQPage = () => {
+
+    useEffect(() => {
+    const generate_mcqs = () => {
+       const response = JSON.parse(localStorage.getItem("lesson"))
+       const newobj = (response.mcqs).replace("Here are the MCQ questions for the given transcription:","");
+       const obj = JSON.parse(newobj)
+       setQuizQuestions(obj);
+    }
+    generate_mcqs();
+}, [])
     const navigate = useNavigate();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -84,14 +96,14 @@ const MCQPage = () => {
                     <div className="results-summary">
                         {quizQuestions.map((q, index) => (
                             <div key={q.id} className="summary-item">
-                                {selectedAnswers[index] === q.answer ? 
-                                    <FiCheckCircle className="summary-icon correct" /> : 
+                                {selectedAnswers[index] === q.answer ?
+                                    <FiCheckCircle className="summary-icon correct" /> :
                                     <FiXCircle className="summary-icon incorrect" />}
                                 <p>Q{index + 1}: {q.question}</p>
                             </div>
                         ))}
                     </div>
-                    <button className="mcq-nav-button" onClick={() => { navigate("/mainpage")}}>Return to Home Page</button>
+                    <button className="mcq-nav-button" onClick={() => { navigate("/mainpage") }}>Return to Home Page</button>
                 </div>
             </div>
         );
@@ -104,8 +116,8 @@ const MCQPage = () => {
         <div className="mcq-page">
             <div className="mcq-card">
                 <div className="mcq-progress-bar">
-                    <div 
-                        className="mcq-progress-fill" 
+                    <div
+                        className="mcq-progress-fill"
                         style={{ width: `${((currentQuestionIndex + 1) / quizQuestions.length) * 100}%` }}
                     ></div>
                 </div>
@@ -129,16 +141,16 @@ const MCQPage = () => {
 
                 <div className="mcq-footer">
                     {isLastQuestion ? (
-                        <button 
-                            className="mcq-nav-button" 
+                        <button
+                            className="mcq-nav-button"
                             onClick={handleSubmit}
                             disabled={!selectedAnswers[currentQuestionIndex]}
                         >
                             Submit
                         </button>
                     ) : (
-                        <button 
-                            className="mcq-nav-button" 
+                        <button
+                            className="mcq-nav-button"
                             onClick={handleNext}
                             disabled={!selectedAnswers[currentQuestionIndex]}
                         >

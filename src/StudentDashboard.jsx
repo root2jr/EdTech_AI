@@ -3,22 +3,21 @@ import LessonSkeleton from './LessonSkeleton';
 import "./StudentDashboard.css"
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FiPlus } from 'react-icons/fi';
 
 const StudentDashboard = ({ isLoading }) => {
     // State to manage the active view: 'lessons' or 'classes'
     const [activeView, setActiveView] = useState('lessons');
     const navigate = useNavigate();
-    const [lessons, setLessons] = useState([
-        { id: 1, title: 'Introduction to Algebra', subject: 'Mathematics', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Algebra' },
-        { id: 2, title: 'The Laws of Motion', subject: 'Physics', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Physics' },
-        { id: 3, title: 'Cellular Biology Basics', subject: 'Biology', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Biology' },
-        { id: 4, title: 'Shakespearean Sonnets', subject: 'Literature', thumbnail: 'https://placehold.co/600x400/e2e8f0/4a5568?text=Literature' },
-    ]);
+    const [lessons, setLessons] = useState([]);
 
     useEffect(() => {
         const fetch_lessons = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/fetchlesson");
+                setLessons([])
+                const response = await axios.post("http://127.0.0.1:8000/fetchlesson", {
+                    class_id: "322J"
+                });
                 console.log(response.data);
                 setLessons(prev => [...prev, ...response.data.message])
 
@@ -55,7 +54,7 @@ const StudentDashboard = ({ isLoading }) => {
                     <div className="card-content">
                         <h3>{lesson.title}</h3>
                         <p>{lesson.subject}</p>
-                        <button className="card-button" onClick={() => { navigate("/lesson"); localStorage.setItem("lesson",lesson.title) }}>Start Lesson</button>
+                        <button className="card-button" onClick={() => { navigate("/lesson"); localStorage.setItem("lesson", JSON.stringify(lesson)) }}>Start Lesson</button>
                     </div>
                 </div>
             ));
@@ -104,7 +103,12 @@ const StudentDashboard = ({ isLoading }) => {
 
             <div className="content-grid">
                 {renderContent()}
-            </div>
+                <button
+                    className="floating-add-button"
+                    onClick={() => navigate('/add')}
+                >
+                    <FiPlus />
+                </button>            </div>
         </div>
     );
 };

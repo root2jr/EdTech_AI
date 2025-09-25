@@ -5,12 +5,15 @@ import { FiSend } from 'react-icons/fi';
 import './AIChatPage.css';
 import axios from "axios"
 import TopNav from './TopNav';
-import { FiHome, FiBarChart2, FiCpu, FiUser } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { FiHome,  FiX ,FiBarChart2, FiCpu, FiUser } from 'react-icons/fi';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 const AIChatPage = ({state}) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const lessonContext = location.state?.lessonContext;
+    const [context, setContext] = useState(lessonContext);
     const [messages, setMessages] = useState([
         {
             id: 1,
@@ -52,7 +55,7 @@ const AIChatPage = ({state}) => {
 
         setTimeout(async () => {
             const airesponse = await axios.post("http://127.0.0.1:8000/ai", {
-                prompt: "Doubt:"+ state + inputValue,
+                prompt: "Lesson Summary(If this field is undefined or empty dont consider it):"+ context.summary + inputValue,
                 username: "jram6269@gmail.com",
                 time: "12:00am"
             })
@@ -74,6 +77,17 @@ const AIChatPage = ({state}) => {
             <div className="chat-input-area">
                 <div className="suggested-prompts">
                 </div>
+                 {context && (
+                    <div className="context-banner">
+                        <div className="context-text">
+                            <strong>Context:</strong>
+                            <span>{context.title}</span>
+                        </div>
+                        <button onClick={() => setContext(null)} className="dismiss-button">
+                            <FiX />
+                        </button>
+                    </div>
+                )}
                 <form
                     className="chat-input-form"
                     onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}

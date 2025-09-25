@@ -7,6 +7,7 @@ const SignUpForm = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [school, setSchool] = useState('');
+    const [student, setStudent] = useState('');
     const [role, setRole] = useState('Student');
     const navigate = useNavigate();
     const handleSubmit = async (event) => {
@@ -19,13 +20,10 @@ const SignUpForm = () => {
             const response = await axios.post("http://127.0.0.1:8000/sign-in", {
                 username: username,
                 password: password,
+                schoolid: school,
+                studentid: student,
                 role: role, 
-                school: school
-
             });
-            if(response.data.message == "User Registered Sucessfully"){
-                navigate("/mainpage")
-            }
             console.log(response.data);
         }
         catch (error) {
@@ -67,12 +65,22 @@ const SignUpForm = () => {
                 />
             </div>
             <div className="form-group">
-                <label htmlFor="confirm-password">School Name</label>
+                <label htmlFor="confirm-password">School Id</label>
                 <input
-                    id="confirm-password"
+                    id="school-id"
                     type="text"
                     value={school}
                     onChange={(e) => setSchool(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="confirm-password">Student ID</label>
+                <input
+                    id="student-id"
+                    type="text"
+                    value={student}
+                    onChange={(e) => setStudent(e.target.value)}
                     required
                 />
             </div>

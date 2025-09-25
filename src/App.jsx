@@ -11,6 +11,8 @@ import LessonPage from './LessonPage'
 import MCQPage from './MCQPage'
 import ManageClassPage from './ManageClassPage'
 import CreateLessonPage from './CreateLessonPage'
+import JoinClassPage from './JoinClassPage'
+import CreateClassPage from './CreateClassPage'
 
 function App() {
 
@@ -27,6 +29,8 @@ function App() {
         <Route path="/mcq" element={<MCQPage />} />
         <Route path="/manageclass" element={<ManageClassPage />} />
         <Route path="/createlesson" element={<CreateLessonPage />} />
+        <Route path="/add" element={<JoinClassPage />} />
+        <Route path="/createclass" element={<CreateClassPage />} />
       </Routes>
     </BrowserRouter>
   )

@@ -101,3 +101,43 @@
     border-radius: 4px;
     transition: width 0.8s ease-in-out;
 }
+/* --- Floating Action Button (FAB) --- */
+.floating-add-button {
+  /* Positioning */
+  position: fixed;
+  bottom: calc(70px + 20px); /* Sits 20px above a 70px BottomNav */
+  right: 20px;
+  z-index: 1000; /* High enough to be on top of most content */
+
+  /* Shape & Size */
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* Creates a perfect circle */
+  
+  /* Theme & Appearance */
+  background-color: var(--accent-color); /* black */
+  color: var(--surface-color); /* white */
+  border: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* A softer, more modern shadow */
+
+  /* Content (for the icon) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  /* Smooth Animation */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.floating-add-button:hover {
+  /* A subtle "lift" effect on hover - much classier than a color change */
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25); /* Enhance shadow on lift */
+}
+
+/* Style for the icon inside the button */
+.floating-add-button svg {
+    font-size: 1.8rem; /* Make the icon larger */
+    stroke-width: 2.5px;
+}

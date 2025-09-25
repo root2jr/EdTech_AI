@@ -31,9 +31,8 @@ const MainPage = () => {
         }, 2500); // Simulate a 2.5-second load time
 
         return () => clearTimeout(timer);
-    }, [userRole]); // Rerun simulation when role changes
+    }, [userRole]); 
 
-    // A simple toggle for demonstration purposes
     const toggleRole = () => {
         setUserRole(prevRole => (prevRole === 'student' ? 'teacher' : 'student'));
     };
@@ -42,7 +41,6 @@ const MainPage = () => {
         <div className="main-page-layout">
             <TopNav />
 
-            {/* DEMO ONLY: Button to switch roles */}
             <button onClick={toggleRole} className="role-toggle-btn">
                 Switch to {userRole === 'student' ? 'Teacher' : 'Student'} View
             </button>

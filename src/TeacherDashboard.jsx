@@ -7,27 +7,27 @@ const TeacherDashboard = ({ isLoading }) => {
     const navigate = useNavigate();
     // Mock data for classes with more details
     const classes = [
-        { 
-            id: 'C101', 
-            name: 'Grade 10 - Physics', 
+        {
+            id: 'C101',
+            name: 'Grade 10 - Physics',
             subject: 'Science',
-            students: 28, 
+            students: 28,
             avgPerformance: 82,
             thumbnail: 'https://placehold.co/600x400/1d1d1f/f5f5f7?text=Physics&font=inter'
         },
-        { 
-            id: 'C102', 
-            name: 'Grade 12 - Advanced Calculus', 
+        {
+            id: 'C102',
+            name: 'Grade 12 - Advanced Calculus',
             subject: 'Mathematics',
-            students: 22, 
+            students: 22,
             avgPerformance: 71,
             thumbnail: 'https://placehold.co/600x400/1d1d1f/f5f5f7?text=Calculus&font=inter'
         },
-        { 
-            id: 'C103', 
-            name: 'Grade 9 - Chemistry', 
+        {
+            id: 'C103',
+            name: 'Grade 9 - Chemistry',
             subject: 'Science',
-            students: 31, 
+            students: 31,
             avgPerformance: 89,
             thumbnail: 'https://placehold.co/600x400/1d1d1f/f5f5f7?text=Chemistry&font=inter'
         },
@@ -37,12 +37,18 @@ const TeacherDashboard = ({ isLoading }) => {
         <div className="dashboard-container">
             <div className="dashboard-header">
                 <h2>Your Classes</h2>
-                <button onClick={() => navigate("/createlesson")} className="create-class-button">
+                <button onClick={() => navigate("/createclass")} className="create-class-button">
                     <FiPlus />
                     <span>Create New Class</span>
                 </button>
+                <button
+                    className="floating-add-button"
+                    onClick={() => navigate('/createlesson')}
+                >
+                    <FiPlus />
+                </button>
             </div>
-            
+
             <div className="teacher-content-grid">
                 {isLoading ? (
                     Array.from({ length: 3 }).map((_, index) => <LessonSkeleton key={index} />)
@@ -67,14 +73,15 @@ const TeacherDashboard = ({ isLoading }) => {
                                         <span>{cls.avgPerformance}%</span>
                                     </div>
                                     <div className="bar-container">
-                                        <div 
-                                            className="bar-fill" 
+                                        <div
+                                            className="bar-fill"
                                             style={{ width: `${cls.avgPerformance}%` }}
                                         ></div>
                                     </div>
                                 </div>
-                                <button className="card-button" onClick={() => {navigate("/manageclass")}}>Manage Class</button>
+                                <button className="card-button" onClick={() => { navigate("/manageclass") }}>Manage Class</button>
                             </div>
+
                         </div>
                     ))
                 )}

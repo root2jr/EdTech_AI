@@ -20,7 +20,7 @@ const JoinClassPage = () => {
     const searchClassesAPI = async (query) => {
         console.log(`Searching API for query: "${query}"`);
         try {
-            const response = await axios.post("http://127.0.0.1:8000/searchclass", {
+            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/searchclass", {
                 query: query
             })
             if((response.data.message).length > 0){

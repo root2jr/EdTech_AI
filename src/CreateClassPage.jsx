@@ -32,7 +32,7 @@ const CreateClassPage = () => {
         const newClassId = generateClassId(subject);
         const classData = { classId: newClassId,className: className, subject: subject, description: description, schoolid: "S002", teacher: "Jayaram"};
         try{
-          const response = await axios.post("http://127.0.0.1:8000/createclass",
+          const response = await axios.post("https://edtech-ai-mc8u.onrender.com/createclass",
               classData
           );
           console.log(response.data);

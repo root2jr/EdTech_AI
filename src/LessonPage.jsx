@@ -30,7 +30,7 @@ const LessonPage = () => {
             const lessonData = JSON.parse(localStorage.getItem("lesson"));
             console.log(lessonData);
             try {
-                const response = await axios.post("http://127.0.0.1:8000/findlesson", {
+                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/findlesson", {
                     lesson: String(lessonData._id)
                 })
                 console.log(response.data);

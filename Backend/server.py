@@ -9,6 +9,8 @@ from passlib.context import CryptContext
 import re
 import time
 from bson import ObjectId
+import random
+import string
 
 load_dotenv()
 app = FastAPI()
@@ -30,6 +32,7 @@ GLADIA_API_KEY = os.getenv("transcriber_apikey")
 lessons = Database["Lessons"]
 schools = Database["Schools"]
 classes = Database["classes"]
+Analytics = Database["Analytics"]
 
 
 class Login(BaseModel):
@@ -54,6 +57,18 @@ async def handle_login(data:Login):
             return {"message":"Invalid Credentials"}
     else:
         return {"message": "Sign-Up Required"}
+    
+    
+
+def generate_class_id():
+    subj = "EdTech"
+    prefix = subj.upper()
+    
+    # Generate 6 random alphanumeric characters
+    random_part = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+    
+    return f"{prefix}-{random_part}"
 
 @app.post("/sign-in")
 async def handle_register(data:Register):
@@ -72,7 +87,8 @@ async def handle_register(data:Register):
                 for student in students:
                    if student["student_id"] == data.studentid:
                       password = pass_context.hash(data.password)
-                      add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role, "school": data.schoolid})
+                      user_id = generate_class_id()
+                      add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role, "school": data.schoolid ,"user_id": user_id})
                       return {"message": "User Registered Sucessfully"}
                 if not saved:
                    return {"message": "Invalid Student id."}
@@ -82,7 +98,8 @@ async def handle_register(data:Register):
                 for teacher in teachers:
                    if teacher["faculty_id"] == data.studentid:
                       password = pass_context.hash(data.password)
-                      add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role, "school": data.schoolid})
+                      user_id = generate_class_id()                      
+                      add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role, "school": data.schoolid, "user_id": user_id})
                       return {"message": "User Registered Sucessfully"}
                 if not saved:
                    return {"message": "Invalid Student id."}
@@ -303,11 +320,6 @@ async def ask_ai_mcq(transcription):
     else:
         print("Error:", response.status_code, response.text)
         
-    
-        
-
-
-     
 
 @app.post("/newlesson")
 async def create_new_lesson(data:lesson):
@@ -319,7 +331,8 @@ async def create_new_lesson(data:lesson):
         truncated_transcript = transcript[:MAX_LENGTH]
         summary = await new_ai_response(truncated_transcript)
         mcqs = await ask_ai_mcq(truncated_transcript)
-        response = await lessons.insert_one({"title": data.title, "url": data.url, "subject": data.subject, "description": data.description, "username": data.username, "classid": data.classid, "thumbnail": "https://placehold.co/600x400/e2e8f0/4a5568?text=Algebra", "summary": summary, "transcription": truncated_transcript,"mcqs":mcqs})
+        lesson_id = generate_class_id()
+        response = await lessons.insert_one({"lesson_id": data.title,"title": data.title, "url": data.url, "subject": data.subject, "description": data.description, "username": data.username, "classid": data.classid, "thumbnail": "https://placehold.co/600x400/e2e8f0/4a5568?text=Algebra", "summary": summary, "transcription": truncated_transcript,"mcqs":mcqs})
         return {"message": "Lesson Created Successfully."}
 
 class findLesson(BaseModel):
@@ -366,5 +379,30 @@ async def search_class(data:Query):
     return {"message": response}
 
 
+class analytics(BaseModel):
+    user_id: str
+
+
+@app.post("/fetchanalytics")
+async def fetch_analytics(data:analytics):
+    response = await Analytics.find_one({"student_id": data.user_id})
+    response["_id"] = str(response["_id"])
+    return {"message": response}
+
+class Completed_lesson(BaseModel):
+    user_id: str
+    lesson_id: str
+    quiz_marks: int
+        
+ 
+
+@app.post("/lessoncompleted")
+async def mark_lesson_complete(data:Completed_lesson):
+    obj = {"user_id": data.user_id, "lesson_id": data.lesson_id, "quiz_marks": data.quiz_marks}
+    response = login.find_one_and_update({"user_id": data.user_id},{"$addToSet": {"lessons":obj}})
+    return {"message": "Lesson Completed Updated."}
+        
+    
+    
 
 

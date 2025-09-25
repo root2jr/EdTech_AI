@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiBookOpen, FiTarget, FiAward, FiUsers, FiClipboard } from 'react-icons/fi';
 import './AnalyticsPage.css';
+import axios from 'axios';
 
 const AnalyticsPage = () => {
-    // In a real app, you'd have one view based on the logged-in user's role
     const [viewMode, setViewMode] = useState('student'); 
-
-    // Mock Data for demonstration
-    const studentData = {
+    const [studentData, setStudentData] = useState( {
         lessonsCompleted: 18,
         averageScore: 88,
         weeklyGoal: 75,
@@ -22,7 +20,23 @@ const AnalyticsPage = () => {
             "Started lesson: 'Cell Mitosis'",
             "Achieved a new high score in 'Calculus Basics'",
         ]
-    };
+    });
+    useEffect(() => {
+        const fetch_analytics = async () => {
+            try{
+              const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetchanalytics",{
+                user_id: "EDTECH-H5XRKR"
+              })
+              setStudentData(response.data.message);
+              console.log(response.data.message);
+            }
+            catch(error){
+                console.error("Error:",error);
+            }
+        }
+        fetch_analytics();
+    },[])
+    // Mock Data for demonstration
 
     const teacherData = {
         activeClasses: 4,

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import './MCQPage.css';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 
@@ -69,7 +70,7 @@ const MCQPage = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let finalScore = 0;
         quizQuestions.forEach((question, index) => {
             if (selectedAnswers[index] === question.answer) {
@@ -78,6 +79,18 @@ const MCQPage = () => {
         });
         setScore(finalScore);
         setIsSubmitted(true);
+        try{
+            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/lessoncompleted",{
+                user_id: "EDTECH-H5XRKR",
+                lesson_id: "EDTECH-H53VVF",
+                quiz_marks: finalScore
+            })
+            console.log(response.data);
+        }
+        catch(error){
+            console.error("Error:",error);
+        }
+
     };
 
     const handleRestart = () => {

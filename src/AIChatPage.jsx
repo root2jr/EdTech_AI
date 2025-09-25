@@ -54,7 +54,7 @@ const AIChatPage = ({state}) => {
         setIsTyping(true);
 
         setTimeout(async () => {
-            const airesponse = await axios.post("http://127.0.0.1:8000/ai", {
+            const airesponse = await axios.post("https://edtech-ai-mc8u.onrender.com/ai", {
                 prompt: "Lesson Summary(If this field is undefined or empty dont consider it):"+ context.summary + inputValue,
                 username: "jram6269@gmail.com",
                 time: "12:00am"

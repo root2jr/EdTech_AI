@@ -17,7 +17,7 @@ const CreateLessonPage = () => {
 
         const lessonData = { lessonName, subject, videoUrl, oneLiner };
         try{
-          const response = await axios.post("http://127.0.0.1:8000/newlesson",{
+          const response = await axios.post("https://edtech-ai-mc8u.onrender.com/newlesson",{
             title: lessonName,
             url: videoUrl,
             subject: subject,

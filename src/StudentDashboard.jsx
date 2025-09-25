@@ -15,7 +15,7 @@ const StudentDashboard = ({ isLoading }) => {
         const fetch_lessons = async () => {
             try {
                 setLessons([])
-                const response = await axios.post("http://127.0.0.1:8000/fetchlesson", {
+                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetchlesson", {
                     class_id: "322J"
                 });
                 console.log(response.data);

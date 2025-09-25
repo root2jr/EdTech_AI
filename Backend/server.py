@@ -6,10 +6,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 import requests
 from passlib.context import CryptContext 
-from youtube_transcript_api import YouTubeTranscriptApi
 import re
 import time
-import asyncio
 from bson import ObjectId
 
 load_dotenv()

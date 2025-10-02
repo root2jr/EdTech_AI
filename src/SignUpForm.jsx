@@ -25,7 +25,7 @@ const SignUpForm = () => {
             year: "numeric"
         });
         try {
-            const response = await axios.post("http://127.0.0.1:8000/sign-in", {
+            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/sign-in", {
                 username: username,
                 email: email,
                 password: password,

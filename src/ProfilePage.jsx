@@ -14,7 +14,7 @@ const ProfilePage = () => {
         role: '',
         joinDate: '',
         school:"",
-        avatarUrl: ''
+        avatarUrl: null
     });
 
     const menuItems = [
@@ -32,7 +32,7 @@ const ProfilePage = () => {
     useEffect(() => {
         const fetch_data = async () => {
             try{
-                const response = await axios.post("http://127.0.0.1:8000/fetch-user-details",{
+                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetch-user-details",{
                     user_id: user_id
                 });
                 console.log(response.data);

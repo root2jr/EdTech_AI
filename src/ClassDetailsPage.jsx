@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiBookOpen, FiPlayCircle, FiCheckCircle, FiUsers } from 'react-icons/fi';
+import { FiArrowLeft, FiBookOpen, FiPlayCircle, FiCheckCircle, FiUsers, FiSettings } from 'react-icons/fi';
 import './ClassDetailsPage.css';
 import axios from 'axios';
 import { FiTag } from 'react-icons/fi';
@@ -9,27 +9,23 @@ import DynamicThumbnail from './DynamicThumbnail';
 const ClassDetailsPage = () => {
     const { classId } = useParams();
     const navigate = useNavigate();
-    const [userid, setUserid] = useState(localStorage.getItem("user-id"));
+    
+    // Get user info from localStorage
+    const [userId, setUserId] = useState(localStorage.getItem("user-id"));
+    const [userRole, setUserRole] = useState(localStorage.getItem("role")); // Get user role
 
-    // Separate states for class-specific info and the list of lessons
     const [classDetails, setClassDetails] = useState(null);
     const [lessons, setLessons] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // This single useEffect handles all data fetching for the page
     useEffect(() => {
-        // Don't fetch if there's no classId in the URL
         if (!classId) return;
-
 
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                // --- STEP 1: Fetch the specific class details ---
-                // In a real-world app, you would have a dedicated endpoint like `/class-details/${classId}`.
-                // For now, we'll fetch all classes and find the one we need.
-                const classListResponse = await axios.post("http://127.0.0.1:8000/fetch-classes", {
-                    user_id: userid // This should be dynamic in a real app
+                const classListResponse = await axios.post("https://edtech-ai-mc8u.onrender.com/fetch-classes", {
+                    user_id: userId
                 });
 
                 const allUserClasses = classListResponse.data.message || [];
@@ -38,21 +34,17 @@ const ClassDetailsPage = () => {
                 if (currentClass) {
                     setClassDetails(currentClass);
                 } else {
-                    // If the class isn't found in the user's list, we can't proceed.
                     throw new Error("Class not found in user's enrolled list.");
                 }
 
-                // --- STEP 2: Fetch the lessons for that specific class ---
-                const lessonsResponse = await axios.post("http://127.0.0.1:8000/fetchlesson", {
+                const lessonsResponse = await axios.post("https://edtech-ai-mc8u.onrender.com/fetchlesson", {
                     class_id: classId
                 });
-
-                // Assuming the server returns { message: [lesson1, lesson2, ...] }
                 setLessons(lessonsResponse.data.message || []);
 
             } catch (error) {
                 console.error("Failed to fetch class data:", error);
-                setClassDetails(null); // Clear data on error to show "not found" message
+                setClassDetails(null);
                 setLessons([]);
             } finally {
                 setIsLoading(false);
@@ -60,12 +52,9 @@ const ClassDetailsPage = () => {
         };
 
         fetchData();
-    }, [classId]); // Dependency array ensures this runs again if the classId in the URL changes
+    }, [classId, userId]);
 
-    // This function now uses a placeholder since your lesson data doesn't have a 'status'
     const getLessonIcon = (lesson) => {
-        // In a real app, you'd get this status from a 'UserProgress' collection
-        // For now, we'll default to 'not-started' for all lessons.
         const status = lesson.status || 'not-started';
         switch (status) {
             case 'completed':
@@ -94,7 +83,6 @@ const ClassDetailsPage = () => {
                 </button>
 
                 <div className="class-header-card">
-                    {/* Use optional chaining (?.) for safety during initial render */}
                     <div className="card-impressive-thumbnail">
                         <DynamicThumbnail text={classDetails.className} seed={classDetails.subject} />
                         <div className="card-subject-tag">
@@ -102,8 +90,22 @@ const ClassDetailsPage = () => {
                             <span>{classDetails.subject}</span>
                         </div>
                     </div>
-                    <h1>{classDetails?.className}</h1>
-                    <p>{classDetails?.subject} • Taught by {classDetails?.teacher}</p>
+                    <div className="class-header-content">
+                        <div className="class-header-main-info">
+                             <h1>{classDetails?.className}</h1>
+                             <p>Taught by {classDetails?.teacher}</p>
+                        </div>
+                        {/* --- NEW: Conditional Manage Class Button --- */}
+                        {userRole === 'Teacher' && (
+                            <button 
+                                className="manage-class-button" 
+                                onClick={() => navigate(`/manageclass/${classDetails.classId}`)}
+                            >
+                                <FiSettings />
+                                <span>Manage Class</span>
+                            </button>
+                        )}
+                    </div>
                     <div className="class-header-stats">
                         <div className="header-stat-item">
                             <FiUsers />
@@ -140,3 +142,4 @@ const ClassDetailsPage = () => {
 };
 
 export default ClassDetailsPage;
+

@@ -26,7 +26,7 @@ const CreateLessonPage = () => {
         const fetchTeacherClasses = async () => {
             try {
                 
-                const response = await axios.post("http://127.0.0.1:8000/fetch-teacher-class", {
+                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetch-teacher-class", {
                     user_id: userid
                 })
                 console.log(response.data);

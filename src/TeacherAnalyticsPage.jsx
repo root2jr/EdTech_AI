@@ -14,7 +14,7 @@ const TeacherAnalyticsPage = () => {
         const fetchTeacherAnalytics = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.post("http://127.0.0.1:8000/fetch-teacher-analytics", {
+                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetch-teacher-analytics", {
                     user_id: userid
                 })
                 console.log(response.data);

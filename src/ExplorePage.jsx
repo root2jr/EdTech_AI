@@ -12,7 +12,7 @@ const ExplorePage = () => {
     const navigate = useNavigate();
     useEffect(() => {
           const fetch_data = async () => {
-            const response = await axios.get("http://127.0.0.1:8000/fetchtopics");
+            const response = await axios.get("https://edtech-ai-mc8u.onrender.com/fetchtopics");
             setExploreTopics(response.data.message);
             console.log(response.data.message);
           }

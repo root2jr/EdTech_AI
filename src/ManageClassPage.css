@@ -11,78 +11,69 @@
 /* --- Main Page Layout --- */
 .manage-class-page {
     font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    min-height: 100vh;
     padding: 1.5rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
 }
 
-/* --- Class Header Card --- */
-.class-header-card {
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-}
-.class-header-top .back-button {
-    background: none;
-    border: none;
-    color: var(--secondary-text-color);
+/* --- Header --- */
+.page-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 1.5rem auto;
+}
+.back-button, .add-student-button {
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
     font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    margin-bottom: 1.5rem;
+    transition: all 0.2s ease;
 }
-.class-header-main {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-.class-header-icon {
-    width: 64px;
-    height: 64px;
+.add-student-button {
     background-color: var(--accent-color);
     color: var(--surface-color);
+    border-color: var(--accent-color);
+}
+.back-button:hover { background-color: var(--surface-color); }
+.add-student-button:hover { background-color: #333; }
+
+/* --- Title & Stats --- */
+.class-title-header {
+    text-align: center;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+.class-title-header h1 { font-size: 2.5rem; margin: 0 0 0.5rem 0; color: var(--primary-text-color); }
+.class-title-header p { font-size: 1.1rem; color: var(--secondary-text-color); margin: 0; }
+
+.class-stats-grid {
     display: grid;
-    place-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto 2.5rem auto;
+}
+.stat-card-mini {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    font-size: 2rem;
-    font-weight: 700;
-}
-.class-header-details h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-    color: var(--primary-text-color);
-}
-.class-header-details p {
-    font-size: 1rem;
-    margin: 0.25rem 0 0 0;
-    color: var(--secondary-text-color);
-}
-.class-header-stats {
-    display: flex;
-    gap: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
-}
-.header-stat-item {
+    padding: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: 1rem;
-    color: var(--primary-text-color);
+    gap: 1rem;
 }
-.header-stat-item svg {
-    color: var(--secondary-text-color);
-    font-size: 1.25rem;
-}
+.stat-icon-mini { font-size: 1.8rem; color: var(--accent-color); }
+.stat-info-mini { display: flex; flex-direction: column; }
+.stat-value-mini { font-size: 1.8rem; font-weight: 600; }
+.stat-label-mini { font-size: 0.9rem; color: var(--secondary-text-color); }
 
 
 /* --- Student Roster Card --- */
@@ -92,91 +83,69 @@
     border-radius: 16px;
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    max-width: 1200px;
+    margin: 0 auto;
 }
-.roster-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-.roster-controls h2 {
-    font-size: 1.5rem;
-    margin: 0;
-}
-.roster-actions {
-    display: flex;
-    gap: 1rem;
-}
-.search-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: var(--bg-color);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
+.roster-controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+.roster-controls h2 { font-size: 1.5rem; margin: 0; }
+.search-bar { display: flex; align-items: center; gap: 0.5rem; background-color: var(--bg-color); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); }
 .search-bar svg { color: var(--secondary-text-color); }
-.search-bar input {
-    border: none;
-    background: none;
-    outline: none;
-    font-size: 0.9rem;
-}
-.add-student-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1rem;
-    background-color: var(--accent-color);
-    color: var(--surface-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
+.search-bar input { border: none; background: none; outline: none; font-size: 0.9rem; }
 
 /* --- Student List --- */
-.student-list {
-    display: flex;
-    flex-direction: column;
-}
 .student-list-item {
     display: grid;
-    grid-template-columns: 2fr 2fr 1.5fr 1fr;
+    grid-template-columns: 2fr 1.5fr 1fr;
     align-items: center;
     gap: 1rem;
     padding: 1rem 0;
     border-bottom: 1px solid var(--border-color);
     font-size: 0.9rem;
 }
-.student-list-item.header {
-    font-weight: 600;
-    color: var(--secondary-text-color);
-    padding-bottom: 0.5rem;
-}
-.student-list-item:last-child {
-    border-bottom: none;
-}
+.student-list-item.header { font-weight: 600; color: var(--secondary-text-color); text-transform: uppercase; font-size: 0.8rem; }
+.student-list-item:last-child { border-bottom: none; }
 
-.student-name { font-weight: 500; }
+.student-name { display: flex; align-items: center; gap: 1rem; font-weight: 500; }
+.student-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 .student-progress { display: flex; align-items: center; gap: 1rem; }
-.student-attention { display: flex; align-items: center; gap: 0.5rem; }
-.student-actions { text-align: right; }
-
-.action-button {
-    background: none;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
+.attention-tag {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
 }
-.action-button:hover { background-color: var(--bg-color); }
+.attention-low { background-color: #eaf6ec; color: #3d8b5b; }
+.attention-medium { background-color: #fff4e5; color: #f59e0b; }
+.attention-high { background-color: #feebeb; color: #ef4444; }
 
-.attention-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+/* --- Responsiveness --- */
+@media (max-width: 768px) {
+    .class-title-header h1 { font-size: 2rem; }
+    .student-list-item { grid-template-columns: 2fr 1fr 1fr; }
+    .student-progress span { display: none; } /* Hide percentage text on tablets */
 }
-.attention-low { background-color: #28a745; }
-.attention-medium { background-color: #ffc107; }
-.attention-high { background-color: #dc3545; }
+
+@media (max-width: 600px) {
+    .manage-class-page { padding: 1rem; }
+    .page-header { margin-bottom: 1rem; }
+    .student-list-item {
+        grid-template-columns: 1fr; /* Stack columns on mobile */
+        gap: 0.75rem;
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    .student-list-item.header { display: none; } /* Hide header on mobile */
+    .student-list-item:last-child { margin-bottom: 0; }
+    .student-progress, .student-attention {
+        grid-column: 1; /* Ensure they take full width */
+    }
+}
+
+/* Loading State */
+.loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; color: var(--secondary-text-color); }
+.loading-spinner { font-size: 3rem; animation: spin 1.5s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-state p { margin-top: 1rem; font-size: 1.1rem; }

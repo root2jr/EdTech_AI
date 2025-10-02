@@ -282,3 +282,70 @@
     color: var(--primary-text-color);
     margin-left: 0.4rem;
 }
+
+/* --- ADD OR MODIFY THESE STYLES IN ClassDetailsPage.css --- */
+
+/* Modify the header card to remove padding */
+.class-header-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    margin-bottom: 2rem;
+    overflow: hidden; /* Important for thumbnail rounded corners */
+    padding: 0; /* Remove padding to allow full-width elements */
+}
+
+/* New container for the content below the thumbnail */
+.class-header-content {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.class-header-main-info h1 {
+    font-size: 2rem;
+    margin: 0 0 0.25rem 0;
+    color: var(--primary-text-color);
+}
+
+.class-header-main-info p {
+    font-size: 1rem;
+    margin: 0;
+    color: var(--secondary-text-color);
+}
+
+/* --- NEW: Styling for the Manage Class Button --- */
+.manage-class-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--accent-color);
+    color: var(--surface-color);
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.manage-class-button:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+}
+
+.manage-class-button svg {
+    font-size: 1.2rem;
+}
+
+/* Adjust stats position */
+.class-header-stats {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background-color: #fafafa;
+}

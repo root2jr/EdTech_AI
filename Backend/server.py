@@ -588,3 +588,50 @@ async def fetch_user_details(data:User_Details):
     logo = response["username"]
     newlogo = logo[0:2]
     return {"name": response["username"],"email":response["email"],"role":response["role"],"joinDate": response["joined"], "avatarUrl": f'https://placehold.co/128x128/1d1d1f/f5f5f7?text={newlogo}&font=inter'}
+
+class Fetch_Class_Details(BaseModel):
+    class_id: str
+
+async def fetch_students_details(userid:list):
+    names = []
+    for user in userid:
+        response = await login.find_one({"user_id": user})
+        names.append(response["username"])
+    return names
+
+async def fetch_student_progress(user_ids: list, lesson_ids: list):
+    student_progress = []
+
+
+    for user in user_ids:
+        completed_count = 0
+
+        for lesson in lesson_ids:
+            if user in (lesson.get("completed_students") or []):
+                completed_count += 1
+
+        progress = {
+            "user_id": user,
+            "completed_lessons": completed_count,
+            "total_lessons": len(lesson_ids),
+            "progress_percent": (completed_count / len(lesson_ids) * 100) if lesson_ids else 0
+        }
+        student_progress.append(progress)
+
+    return student_progress
+
+@app.post("/class-details-analytics")
+async def fetch_class_details(data:Fetch_Class_Details):
+    print(data.class_id)
+    response = await classes.find_one({"classId": data.class_id})
+    if not response:
+        raise HTTPException(status_code=404, detail="Content not Found")
+    total_students = len(response["students"])
+    students = await fetch_students_details(response["students"])
+    completed_students = 0
+    total_lessons = await lessons.find({"classid": data.class_id}).to_list(length=None)
+    for lesson in total_lessons:
+           completed_students += len(lesson.get("completed_students") or [])
+    completion_rate = (completed_students / total_students) * 100
+    student_progress = await fetch_student_progress(response["students"],total_lessons)
+    return {"id": response["students"], "name": students, "enrolled_students": total_students, "average_completion_rate": completion_rate, "performance": student_progress}

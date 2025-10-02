@@ -18,7 +18,7 @@ const LoginForm = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try{
-            const response = await axios.post("http://127.0.0.1:8000/login",{
+            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/login",{
                 email: username,
                 password: password,
                 role: role

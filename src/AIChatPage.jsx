@@ -83,7 +83,7 @@ const AIChatPage = () => {
             : `memory:${JSON.stringify(memoryContext, null, 2)}\n User's Prompt:${promptText} \n Note: Just respond to the message considering the factors no need to mention anything be it memory or anything since it will be directly displayed to the user. `;
 
         try {
-            const aiResponse = await axios.post("http://127.0.0.1:8000/ai", {
+            const aiResponse = await axios.post("https://edtech-ai-mc8u.onrender.com/ai", {
                 prompt: promptWithContext,
                 username: userid, // This should be dynamic from auth state
                 time: new Date().toLocaleTimeString()

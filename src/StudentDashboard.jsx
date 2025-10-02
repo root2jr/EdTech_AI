@@ -15,7 +15,7 @@ const StudentDashboard = ({ isLoading }) => {
     useEffect(() => {
         const fetch_classes = async () => {
             try {
-                const response = await axios.post("http://127.0.0.1:8000/fetch-classes", {
+                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetch-classes", {
                     user_id: userid
                 });
                 console.log(response.data);

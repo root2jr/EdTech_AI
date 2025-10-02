@@ -1,61 +1,138 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FiUsers, FiBarChart2, FiSearch, FiPlus, FiArrowLeft } from 'react-icons/fi';
 import './ManageClassPage.css';
-import { useNavigate } from 'react-router-dom';
-
-// Mock Data for a single class and its students
-const classData = {
-    id: 'C101',
-    name: 'Grade 10 - Physics',
-    subject: 'Science',
-    avgPerformance: 82,
-    students: [
-        { id: 1, name: 'Aarav Sharma', progress: 95, attentionScore: 'low' },
-        { id: 2, name: 'Saanvi Patel', progress: 88, attentionScore: 'low' },
-        { id: 3, name: 'Vivaan Gupta', progress: 72, attentionScore: 'medium' },
-        { id: 4, name: 'Diya Singh', progress: 98, attentionScore: 'low' },
-        { id: 5, name: 'Arjun Kumar', progress: 55, attentionScore: 'high' },
-        { id: 6, name: 'Ananya Desai', progress: 85, attentionScore: 'low' },
-        { id: 7, name: 'Rohan Mehta', progress: 65, attentionScore: 'medium' },
-        { id: 8, name: 'Isha Reddy', progress: 40, attentionScore: 'high' },
-    ]
-};
+import axios from 'axios';
 
 const ManageClassPage = () => {
+    const { classId } = useParams();
     const navigate = useNavigate();
+
+    // State to hold data from the API
+    const [classData, setClassData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredStudents = classData.students.filter(student =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    useEffect(() => {
+        const fetchClassDetails = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/class-details-analytics", {
+                    class_id: classId
+                });
 
+                const apiData = response.data;
+
+                // --- DATA TRANSFORMATION LOGIC ---
+                // Transform the API data into the structure the component needs.
+                const transformedData = {
+                    classId: classId,
+                    // API doesn't provide these, so we'll use placeholders or the classId.
+                    className: `Class Overview: ${classId}`,
+                    subject: 'Student Performance Analytics',
+                    avgPerformance: apiData.average_completion_rate,
+                    // Map the 'performance' array from the API to the 'students' array format.
+                    students: apiData.performance.map(perf => {
+                        // The API response has separate 'id' and 'name' arrays.
+                        // We find the index of the current student's ID to get their name.
+                        const studentIndex = apiData.id.indexOf(perf.user_id);
+                        const studentName = studentIndex !== -1 ? apiData.name[studentIndex] : 'Unknown Student';
+
+                        // The API doesn't provide an 'attentionScore'. We can derive it from progress.
+                        // This is an example rule: low progress means high attention is needed.
+                        let attentionScore = 'low';
+                        if (perf.progress_percent < 50) {
+                            attentionScore = 'high';
+                        } else if (perf.progress_percent < 80) {
+                            attentionScore = 'medium';
+                        }
+
+                        return {
+                            id: perf.user_id,
+                            name: studentName,
+                            // Generate a consistent avatar using the student's ID
+                            avatar: `https://i.pravatar.cc/40?u=${perf.user_id}`,
+                            progress: perf.progress_percent,
+                            attentionScore: attentionScore,
+                        };
+                    })
+                };
+                
+                setClassData(transformedData);
+                setError(null);
+
+            } catch (err) {
+                console.error("Error fetching class details:", err);
+                setError("Failed to load class details. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchClassDetails();
+    }, [classId]); // Re-run effect if classId changes
+
+    // Helper function to set CSS class based on attention score
     const getAttentionScoreClass = (score) => {
         if (score === 'high') return 'attention-high';
         if (score === 'medium') return 'attention-medium';
         return 'attention-low';
     };
+    
+    // --- RENDER LOGIC ---
+
+    if (loading) {
+        return <div className="loading-state">Loading Class Details...</div>;
+    }
+
+    if (error) {
+        return <div className="error-state">{error}</div>;
+    }
+
+    // Ensure classData is not null before proceeding
+    if (!classData) {
+        return <div className="loading-state">No data available for this class.</div>;
+    }
+    
+    // Filter students based on search term (now uses data from state)
+    const filteredStudents = classData.students.filter(student =>
+        student.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="manage-class-page">
-            <div className="class-header-card">
-                <div className="class-header-top">
-                    <button className="back-button" onClick={() => navigate("/mainpage")}><FiArrowLeft /> Back to Dashboard</button>
+            <header className="page-header">
+                <button className="back-button" onClick={() => navigate(-1)}>
+                    <FiArrowLeft />
+                    <span>Back</span>
+                </button>
+                <div className="header-actions">
+                    <button className="add-student-button">
+                        <FiPlus />
+                        <span>Add Student</span>
+                    </button>
                 </div>
-                <div className="class-header-main">
-                    <div className="class-header-icon">{classData.subject.charAt(0)}</div>
-                    <div className="class-header-details">
-                        <h1>{classData.name}</h1>
-                        <p>{classData.subject}</p>
+            </header>
+
+            <div className="class-title-header">
+                <h1>{classData.className}</h1>
+                <p>{classData.subject}</p>
+            </div>
+
+            <div className="class-stats-grid">
+                <div className="stat-card-mini">
+                    <div className="stat-icon-mini"><FiUsers /></div>
+                    <div className="stat-info-mini">
+                        <span className="stat-value-mini">{classData.students.length}</span>
+                        <span className="stat-label-mini">Enrolled Students</span>
                     </div>
                 </div>
-                <div className="class-header-stats">
-                    <div className="header-stat-item">
-                        <FiUsers />
-                        <span><strong>{classData.students.length}</strong> Students</span>
-                    </div>
-                    <div className="header-stat-item">
-                        <FiBarChart2 />
-                        <span><strong>{classData.avgPerformance}%</strong> Avg. Performance</span>
+                <div className="stat-card-mini">
+                    <div className="stat-icon-mini"><FiBarChart2 /></div>
+                    <div className="stat-info-mini">
+                        <span className="stat-value-mini">{classData.avgPerformance}%</span>
+                        <span className="stat-label-mini">Avg. Completion</span>
                     </div>
                 </div>
             </div>
@@ -63,51 +140,49 @@ const ManageClassPage = () => {
             <div className="student-roster-card">
                 <div className="roster-controls">
                     <h2>Student Roster</h2>
-                    <div className="roster-actions">
-                        <div className="search-bar">
-                            <FiSearch />
-                            <input
-                                type="text"
-                                placeholder="Search students..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                        <button className="add-student-button">
-                            <FiPlus />
-                            <span>Add Student</span>
-                        </button>
+                    <div className="search-bar">
+                        <FiSearch />
+                        <input
+                            type="text"
+                            placeholder="Search students..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
                     </div>
                 </div>
 
                 <div className="student-list">
-                    {/* List Header */}
                     <div className="student-list-item header">
-                        <span className="student-name">Name</span>
+                        <span className="student-name">Student Name</span>
                         <span className="student-progress">Progress</span>
-                        <span className="student-attention">Attention Score</span>
-                        <span className="student-actions">Actions</span>
+                        <span className="student-attention">Attention Required</span>
                     </div>
 
-                    {/* Student Rows */}
-                    {filteredStudents.map(student => (
-                        <div key={student.id} className="student-list-item">
-                            <span className="student-name">{student.name}</span>
-                            <div className="student-progress">
-                                <div className="bar-container">
-                                    <div className="bar-fill" style={{ width: `${student.progress}%` }}></div>
+                    {filteredStudents.length > 0 ? (
+                        filteredStudents.map(student => (
+                            <div key={student.id} className="student-list-item">
+                                <div className="student-name">
+                                    <img src={`https://placehold.co/128x128/1d1d1f/f5f5f7?text=${student.name}&font=inter'`} alt={student.name} className="student-avatar" />
+                                    <span>{student.name}</span>
                                 </div>
-                                <span>{student.progress}%</span>
+                                <div className="student-progress">
+                                    <div className="bar-container">
+                                        <div className="bar-fill" style={{ width: `${student.progress}%` }}></div>
+                                    </div>
+                                    <span>{student.progress}%</span>
+                                </div>
+                                <div className="student-attention">
+                                    <span className={`attention-tag ${getAttentionScoreClass(student.attentionScore)}`}>
+                                        {student.attentionScore}
+                                    </span>
+                                </div>
                             </div>
-                            <span className="student-attention">
-                                <span className={`attention-dot ${getAttentionScoreClass(student.attentionScore)}`}></span>
-                                {student.attentionScore.charAt(0).toUpperCase() + student.attentionScore.slice(1)}
-                            </span>
-                            <div className="student-actions">
-                                <button className="action-button">View Details</button>
-                            </div>
+                        ))
+                    ) : (
+                        <div className="student-list-item empty">
+                            No students found.
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         </div>

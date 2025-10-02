@@ -88,7 +88,7 @@ const MCQPage = () => {
             return; 
         }
         try {
-            const response = await axios.post("http://127.0.0.1:8000/lessoncompleted", {
+            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/lessoncompleted", {
                 user_id: userid,
                 lesson_id: lessonid,
                 quiz_marks: finalScore

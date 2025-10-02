@@ -31,7 +31,7 @@ function App() {
         <Route path="/lesson" element={<LessonPage />} />
         <Route path="/ai" element={<AIChatPage />} />
         <Route path="/mcq" element={<MCQPage />} />
-        <Route path="/manageclass" element={<ManageClassPage />} />
+        <Route path="/manageclass/:classId" element={<ManageClassPage />} />
         <Route path="/createlesson" element={<CreateLessonPage />} />
         <Route path="/add" element={<JoinClassPage />} />
         <Route path="/createclass" element={<CreateClassPage />} />

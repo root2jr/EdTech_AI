@@ -40,7 +40,7 @@ const ExploreTopicPage = () => {
         setIsLoading(true);
         const fetch_topic_data = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/fetchtopicdetails")
+                const response = await axios.get("https://edtech-ai-mc8u.onrender.com/fetchtopicdetails")
                 setAllTopicData(response.data.message);
                 console.log(response.data.message);
                 setIsLoading(false);

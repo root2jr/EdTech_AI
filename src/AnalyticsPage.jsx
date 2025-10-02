@@ -22,7 +22,7 @@ const AnalyticsPage = () => {
             const fetch_analytics = async () => {
                 setIsLoading(true);
                 try {
-                    const response = await axios.post("http://127.0.0.1:8000/fetchanalytics", {
+                    const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetchanalytics", {
                         user_id: userid // This should be dynamic from auth state
                     });
                     setStudentData(response.data.message);

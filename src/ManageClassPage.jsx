@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiUsers, FiBarChart2, FiSearch, FiPlus, FiArrowLeft } from 'react-icons/fi';
+import { FiUsers, FiBarChart2, FiSearch, FiPlus, FiArrowLeft, FiCheckCircle, FiCopy } from 'react-icons/fi';
 import './ManageClassPage.css';
 import axios from 'axios';
 
@@ -10,9 +10,18 @@ const ManageClassPage = () => {
 
     // State to hold data from the API
     const [classData, setClassData] = useState(null);
+    const [showclassid, setShowclassid] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isCopied, setIsCopied] = useState(false);
+    const [userid, setUserid] = useState(localStorage.getItem("user-id"));
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(classId);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000); // Reset copied state after 2 seconds
+    };
 
     useEffect(() => {
         const fetchClassDetails = async () => {
@@ -58,7 +67,7 @@ const ManageClassPage = () => {
                         };
                     })
                 };
-                
+
                 setClassData(transformedData);
                 setError(null);
 
@@ -79,7 +88,7 @@ const ManageClassPage = () => {
         if (score === 'medium') return 'attention-medium';
         return 'attention-low';
     };
-    
+
     // --- RENDER LOGIC ---
 
     if (loading) {
@@ -94,7 +103,7 @@ const ManageClassPage = () => {
     if (!classData) {
         return <div className="loading-state">No data available for this class.</div>;
     }
-    
+
     // Filter students based on search term (now uses data from state)
     const filteredStudents = classData.students.filter(student =>
         student.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -102,13 +111,30 @@ const ManageClassPage = () => {
 
     return (
         <div className="manage-class-page">
+            {showclassid && <div className="success-modal-overlay">
+                <div className="success-modal-card">
+                    <FiCheckCircle className="success-modal-icon" />
+                    <h2>Class ID!</h2>
+                    <p>Share this class id with your students.</p>
+                    <div className="class-id-display">
+                        <span>Your unique Class ID is:</span>
+                        <strong>{classId}</strong>
+                        <button onClick={copyToClipboard} className="copy-id-button">
+                            {isCopied ? <><FiCheckCircle /> Copied!</> : <><FiCopy /> Copy ID</>}
+                        </button>
+                    </div>
+                    <button onClick={() => setShowclassid(false)} className="create-another-button">
+                        Done
+                    </button>
+                </div>
+            </div>}
             <header className="page-header">
                 <button className="back-button" onClick={() => navigate(-1)}>
                     <FiArrowLeft />
                     <span>Back</span>
                 </button>
                 <div className="header-actions">
-                    <button className="add-student-button">
+                    <button onClick={() => setShowclassid(true)} className="add-student-button">
                         <FiPlus />
                         <span>Add Student</span>
                     </button>

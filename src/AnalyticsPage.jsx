@@ -1,126 +1,123 @@
 import React, { useEffect, useState } from 'react';
-import { FiBookOpen, FiTarget, FiAward, FiUsers, FiClipboard } from 'react-icons/fi';
+import { FiBookOpen, FiTarget, FiAward, FiUsers, FiClipboard, FiLoader } from 'react-icons/fi';
 import './AnalyticsPage.css';
 import axios from 'axios';
+// Import the dedicated component for the teacher's view
+import TeacherAnalyticsPage from './TeacherAnalyticsPage'; 
 
 const AnalyticsPage = () => {
-    const [viewMode, setViewMode] = useState('student'); 
-    const [studentData, setStudentData] = useState( {
-        lessonsCompleted: 18,
-        averageScore: 88,
-        weeklyGoal: 75,
-        proficiency: [
-            { subject: 'Algebra', score: 92 },
-            { subject: 'Physics', score: 85 },
-            { subject: 'Biology', score: 78 },
-            { subject: 'Literature', score: 95 },
-        ],
-        recentActivity: [
-            "Completed quiz: 'Newton's Laws'",
-            "Started lesson: 'Cell Mitosis'",
-            "Achieved a new high score in 'Calculus Basics'",
-        ]
-    });
+    // This state now purely controls which component to display
+    const viewMode = localStorage.getItem("role"); 
+    
+    // State for student-specific data
+    const [studentData, setStudentData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+        const [userid,setUserid] = useState(localStorage.getItem("user-id"));
+    
+
     useEffect(() => {
-        const fetch_analytics = async () => {
-            try{
-              const response = await axios.post("https://edtech-ai-mc8u.onrender.com/fetchanalytics",{
-                user_id: "EDTECH-H5XRKR"
-              })
-              setStudentData(response.data.message);
-              console.log(response.data.message);
-            }
-            catch(error){
-                console.error("Error:",error);
-            }
+        // This effect now ONLY handles fetching student data.
+        // Teacher data fetching is handled by the TeacherAnalyticsPage component itself.
+        if (viewMode === 'Student') {
+            const fetch_analytics = async () => {
+                setIsLoading(true);
+                try {
+                    const response = await axios.post("http://127.0.0.1:8000/fetchanalytics", {
+                        user_id: userid // This should be dynamic from auth state
+                    });
+                    setStudentData(response.data.message);
+                    console.log("Fetched Student Analytics:", response.data.message);
+                } catch (error) {
+                    console.error("Error fetching student analytics:", error);
+                    setStudentData(null);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetch_analytics();
         }
-        fetch_analytics();
-    },[])
-    // Mock Data for demonstration
+    }, [viewMode]); // Re-fetches student data if user toggles back to student view
 
-    const teacherData = {
-        activeClasses: 4,
-        averageCompletionRate: 76,
-        studentsNeedingHelp: 5,
-        classPerformance: [
-            { name: 'Grade 10 - Physics', score: 82 },
-            { name: 'Grade 12 - Calculus', score: 71 },
-            { name: 'Grade 9 - Chemistry', score: 89 },
-        ],
-        recentGraded: [
-            "Assignment: 'Lab Safety Report' for 28 students",
-            "Quiz: 'Periodic Table' for 31 students",
-        ]
-    };
+   
 
-    const data = viewMode === 'student' ? studentData : teacherData;
-
-    const toggleView = () => {
-        setViewMode(prev => (prev === 'student' ? 'teacher' : 'student'));
-    };
-
-    // Helper to create the progress circle style
     const progressCircleStyle = (percent) => ({
         background: `conic-gradient(var(--accent-color) ${percent * 3.6}deg, var(--border-color) 0deg)`
     });
 
+    // Render the TeacherAnalyticsPage directly when in teacher mode
+    if (viewMode === 'Teacher') {
+        // We add the toggle button inside the Teacher page for consistency
+        return (
+            <>
+                
+                <TeacherAnalyticsPage />
+            </>
+        );
+    }
+    
+    // Render loading state for student view
+    if (isLoading) {
+        return (
+            <div className="analytics-page">
+                <div className="analytics-header">
+                    <h2>Analytics Dashboard</h2>
+                </div>
+                <div className="loading-state">
+                    <FiLoader className="loading-spinner" />
+                    <p>Loading Student Analytics...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // --- RENDER THE STUDENT ANALYTICS DASHBOARD ---
     return (
         <div className="analytics-page">
             <div className="analytics-header">
                 <h2>Analytics Dashboard</h2>
-                <button onClick={toggleView} className="view-toggle-btn">
-                    Switch to {viewMode === 'student' ? 'Teacher' : 'Student'} View
-                </button>
+              
             </div>
 
             <div className="analytics-grid">
-                {/* --- Stat Cards --- */}
+                {/* Stat Cards using optional chaining (?.) for safety */}
                 <div className="analytics-card stat-card">
-                    <div className="stat-icon">{viewMode === 'student' ? <FiBookOpen /> : <FiUsers />}</div>
-                    <div className="stat-value">{viewMode === 'student' ? data.lessonsCompleted : data.activeClasses}</div>
-                    <div className="stat-label">{viewMode === 'student' ? 'Lessons Completed' : 'Active Classes'}</div>
+                    <div className="stat-icon"><FiBookOpen /></div>
+                    <div className="stat-value">{studentData?.lessonsCompleted ?? 0}</div>
+                    <div className="stat-label">Lessons Completed</div>
                 </div>
 
                 <div className="analytics-card stat-card">
-                    <div className="stat-icon">{viewMode === 'student' ? <FiAward /> : <FiClipboard />}</div>
-                    <div className="stat-value">{viewMode === 'student' ? `${data.averageScore}%` : `${data.averageCompletionRate}%`}</div>
-                    <div className="stat-label">{viewMode === 'student' ? 'Average Score' : 'Completion Rate'}</div>
+                    <div className="stat-icon"><FiAward /></div>
+                    <div className="stat-value">{`${studentData?.averageScore ?? 0}%`}</div>
+                    <div className="stat-label">Average Score</div>
                 </div>
 
-                {/* --- Progress Circle Card --- */}
                 <div className="analytics-card progress-card">
-                    <div className="progress-circle" style={progressCircleStyle(viewMode === 'student' ? data.weeklyGoal : data.averageCompletionRate)}>
-                        <div className="progress-value">{viewMode === 'student' ? `${data.weeklyGoal}%` : `${data.averageCompletionRate}%`}</div>
+                    <div className="progress-circle" style={progressCircleStyle(studentData?.weeklyGoal ?? 0)}>
+                        <div className="progress-value">{`${studentData?.weeklyGoal ?? 0}%`}</div>
                     </div>
-                    <div className="progress-label">{viewMode === 'student' ? 'Weekly Goal Progress' : 'Overall Completion Rate'}</div>
+                    <div className="progress-label">Weekly Goal Progress</div>
                 </div>
 
-                {/* --- Proficiency / Performance Bar Chart Card --- */}
-                <div className="analytics-card proficiency-card">
-                    <h3>{viewMode === 'student' ? 'Subject Proficiency' : 'Class Performance'}</h3>
+                <div className="analytics-card proficiency-card full-width-card">
+                    <h3>Subject Proficiency</h3>
                     <ul className="proficiency-list">
-                        {(viewMode === 'student' ? data.proficiency : data.classPerformance).map(item => (
-                            <li key={item.subject || item.name}>
-                                <div className="proficiency-label">
-                                    <span>{item.subject || item.name}</span>
-                                    <span>{item.score}%</span>
-                                </div>
-                                <div className="bar-container">
-                                    <div className="bar-fill" style={{ width: `${item.score}%` }}></div>
-                                </div>
-                            </li>
-                        ))}
+                        {studentData?.proficiency && studentData.proficiency.length > 0 ? (
+                            studentData.proficiency.map(item => (
+                                <li key={item.subject}>
+                                    <div className="proficiency-label">
+                                        <span>{item.subject}</span>
+                                        <span>{item.score}%</span>
+                                    </div>
+                                    <div className="bar-container">
+                                        <div className="bar-fill" style={{ width: `${item.score}%` }}></div>
+                                    </div>
+                                </li>
+                            ))
+                        ) : (
+                            <li className="no-data-message">No proficiency data available.</li>
+                        )}
                     </ul>
-                </div>
-
-                {/* --- Recent Activity Card --- */}
-                <div className="analytics-card activity-card">
-                     <h3>Recent Activity</h3>
-                     <ul className="activity-list">
-                        {(viewMode === 'student' ? data.recentActivity : data.recentGraded).map((activity, index) => (
-                            <li key={index}>{activity}</li>
-                        ))}
-                     </ul>
                 </div>
             </div>
         </div>
@@ -128,3 +125,4 @@ const AnalyticsPage = () => {
 };
 
 export default AnalyticsPage;
+

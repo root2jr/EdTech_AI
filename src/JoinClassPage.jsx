@@ -16,14 +16,16 @@ const JoinClassPage = () => {
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [requestedClasses, setRequestedClasses] = useState(new Set());
+    const [userid, setUserid] = useState(localStorage.getItem("user-id"));
+
 
     const searchClassesAPI = async (query) => {
         console.log(`Searching API for query: "${query}"`);
         try {
-            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/searchclass", {
+            const response = await axios.post("http://127.0.0.1:8000/searchclass", {
                 query: query
             })
-            if((response.data.message).length > 0){
+            if ((response.data.message).length > 0) {
                 setClasses(response.data.message);
             }
         }
@@ -31,12 +33,10 @@ const JoinClassPage = () => {
             console.error("Error:", error);
         }
         return classes
-        
+
     };
 
-    // This useEffect hook triggers the API call with debouncing
     useEffect(() => {
-        // If the search term is empty, clear results and don't search.
         if (!searchTerm.trim()) {
             setResults([]);
             setIsLoading(false);
@@ -57,9 +57,18 @@ const JoinClassPage = () => {
         return () => clearTimeout(debounceTimer);
     }, [searchTerm]); // This effect re-runs whenever 'searchTerm' changes.
 
-    const handleJoinRequest = (classId) => {
-        console.log(`Requesting to join class ID: ${classId}`);
+    const handleJoinRequest = async (classId) => {
         setRequestedClasses(prev => new Set(prev).add(classId));
+        try {
+            const response = await axios.post("http://127.0.0.1:8000/joinclass", {
+                user_id: userid,
+                class_id: classId
+            });
+            console.log(response.data);
+        }
+        catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (

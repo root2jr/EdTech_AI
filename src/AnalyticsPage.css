@@ -179,3 +179,30 @@
 .activity-list li:last-child {
     border-bottom: none;
 }
+/* --- ADD THIS TO YOUR AnalyticsPage.css FILE --- */
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 200px); /* Adjust height as needed */
+    color: var(--secondary-text-color);
+}
+
+.loading-spinner {
+    font-size: 3rem;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-state p {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+}

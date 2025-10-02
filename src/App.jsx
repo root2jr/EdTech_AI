@@ -13,6 +13,10 @@ import ManageClassPage from './ManageClassPage'
 import CreateLessonPage from './CreateLessonPage'
 import JoinClassPage from './JoinClassPage'
 import CreateClassPage from './CreateClassPage'
+import ClassDetailsPage from './ClassDetailsPage'
+import TeacherAnalyticsPage from './TeacherAnalyticsPage'
+import ExplorePage from './ExplorePage'
+import ExploreTopicPage from './ExploreTopicPage'
 
 function App() {
 
@@ -31,6 +35,9 @@ function App() {
         <Route path="/createlesson" element={<CreateLessonPage />} />
         <Route path="/add" element={<JoinClassPage />} />
         <Route path="/createclass" element={<CreateClassPage />} />
+        <Route path="/class/:classId" element={<ClassDetailsPage />} />
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/explore/:topicId" element={<ExploreTopicPage />} />
       </Routes>
     </BrowserRouter>
   )

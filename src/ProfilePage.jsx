@@ -1,20 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiEdit2, FiBell, FiShield, FiHelpCircle, FiLogOut, FiChevronRight } from 'react-icons/fi';
 import './ProfilePage.css';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
-    // In a real application, this data would come from a user context or API
-    const userData = {
-        name: 'Sahana',
-        email: 'sahana@edtechai.com',
-        role: 'Student',
-        joinDate: 'September 1, 2025',
-        school:"Prince Matriculation Higher Secondary School",
-        // Using a monochrome placeholder that fits the theme
-        avatarUrl: 'https://placehold.co/128x128/1d1d1f/f5f5f7?text=SR&font=inter'
-    };
+    const user_id = localStorage.getItem("user-id");
+    
+    const [userData, setUserData] = useState({
+        name: "",
+        email: '',
+        role: '',
+        joinDate: '',
+        school:"",
+        avatarUrl: ''
+    });
 
     const menuItems = [
         { icon: <FiEdit2 />, text: 'Edit Profile' },
@@ -24,8 +25,25 @@ const ProfilePage = () => {
     ];
 
     const handle_logout = () => {
+          localStorage.clear();
           navigate("/");
     }
+
+    useEffect(() => {
+        const fetch_data = async () => {
+            try{
+                const response = await axios.post("http://127.0.0.1:8000/fetch-user-details",{
+                    user_id: user_id
+                });
+                console.log(response.data);
+                setUserData(response.data);
+            }
+            catch(e){
+                console.error("Error:",e);
+            }
+        }
+        fetch_data();
+    },[])
     return (
         <div className="profile-page">
             <div className="profile-header">

@@ -6,6 +6,8 @@ import axios from 'axios';
 
 const LessonPage = () => {
     const navigate = useNavigate(); // Hook to programmatically navigate
+    const [userid, setUserid] = useState(localStorage.getItem("user-id"));
+
     const [lesson, setLesson] = useState({
         id: 'L001',
         title: 'Introduction to Classical Mechanics',
@@ -29,8 +31,9 @@ const LessonPage = () => {
         const find_Lesson = async () => {
             const lessonData = JSON.parse(localStorage.getItem("lesson"));
             console.log(lessonData);
+
             try {
-                const response = await axios.post("https://edtech-ai-mc8u.onrender.com/findlesson", {
+                const response = await axios.post("http://127.0.0.1:8000/findlesson", {
                     lesson: String(lessonData._id)
                 })
                 console.log(response.data);

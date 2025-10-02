@@ -8,54 +8,58 @@ import axios from 'axios';
 
 
 const MCQPage = () => {
+    const [lessonid, setLessonid] = useState();
     const [quizQuestions, setQuizQuestions] = useState([
-    {
-        id: 1,
-        question: "What is the powerhouse of the cell?",
-        options: ["Nucleus", "Ribosome", "Mitochondrion", "Chloroplast"],
-        answer: "Mitochondrion"
-    },
-    {
-        id: 2,
-        question: "In the equation F = ma, what does 'a' stand for?",
-        options: ["Area", "Acceleration", "Amplitude", "Atomic Mass"],
-        answer: "Acceleration"
-    },
-    {
-        id: 3,
-        question: "Which planet is known as the Red Planet?",
-        options: ["Venus", "Mars", "Jupiter", "Saturn"],
-        answer: "Mars"
-    },
-    {
-        id: 4,
-        question: "Who wrote the play 'Hamlet'?",
-        options: ["Charles Dickens", "William Shakespeare", "George Orwell", "Jane Austen"],
-        answer: "William Shakespeare"
-    },
-    {
-        id: 5,
-        question: "What is the chemical symbol for Gold?",
-        options: ["Ag", "Au", "Pb", "Fe"],
-        answer: "Au"
-    }
-]);
+        {
+            id: 1,
+            question: "What is the powerhouse of the cell?",
+            options: ["Nucleus", "Ribosome", "Mitochondrion", "Chloroplast"],
+            answer: "Mitochondrion"
+        },
+        {
+            id: 2,
+            question: "In the equation F = ma, what does 'a' stand for?",
+            options: ["Area", "Acceleration", "Amplitude", "Atomic Mass"],
+            answer: "Acceleration"
+        },
+        {
+            id: 3,
+            question: "Which planet is known as the Red Planet?",
+            options: ["Venus", "Mars", "Jupiter", "Saturn"],
+            answer: "Mars"
+        },
+        {
+            id: 4,
+            question: "Who wrote the play 'Hamlet'?",
+            options: ["Charles Dickens", "William Shakespeare", "George Orwell", "Jane Austen"],
+            answer: "William Shakespeare"
+        },
+        {
+            id: 5,
+            question: "What is the chemical symbol for Gold?",
+            options: ["Ag", "Au", "Pb", "Fe"],
+            answer: "Au"
+        }
+    ]);
 
 
     useEffect(() => {
-    const generate_mcqs = () => {
-       const response = JSON.parse(localStorage.getItem("lesson"))
-       const newobj = (response.mcqs).replace("Here are the MCQ questions for the given transcription:","");
-       const obj = JSON.parse(newobj)
-       setQuizQuestions(obj);
-    }
-    generate_mcqs();
-}, [])
+        const generate_mcqs = () => {
+            const response = JSON.parse(localStorage.getItem("lesson"))
+            setLessonid(response.lesson_id);
+            const newobj = (response.mcqs).replace("Here are the MCQ questions for the given transcription:", "");
+            const obj = JSON.parse(newobj)
+            setQuizQuestions(obj);
+        }
+        generate_mcqs();
+    }, [])
     const navigate = useNavigate();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [score, setScore] = useState(0);
+    const [userid, setUserid] = useState(localStorage.getItem("user-id"));
+
 
     const handleOptionSelect = (option) => {
         setSelectedAnswers({
@@ -79,26 +83,25 @@ const MCQPage = () => {
         });
         setScore(finalScore);
         setIsSubmitted(true);
-        try{
-            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/lessoncompleted",{
-                user_id: "EDTECH-H5XRKR",
-                lesson_id: "EDTECH-H53VVF",
+        const role = localStorage.getItem("role");
+        if(role == "Teacher"){
+            return; 
+        }
+        try {
+            const response = await axios.post("http://127.0.0.1:8000/lessoncompleted", {
+                user_id: userid,
+                lesson_id: lessonid,
                 quiz_marks: finalScore
             })
             console.log(response.data);
         }
-        catch(error){
-            console.error("Error:",error);
+        catch (error) {
+            console.error("Error:", error);
         }
 
     };
 
-    const handleRestart = () => {
-        setCurrentQuestionIndex(0);
-        setSelectedAnswers({});
-        setIsSubmitted(false);
-        setScore(0);
-    }
+
 
     if (isSubmitted) {
         return (

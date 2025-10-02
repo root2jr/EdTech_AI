@@ -1,0 +1,20 @@
+.dynamic-thumbnail-container {
+    width: 100%;
+    aspect-ratio: 16 / 8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-sizing: border-box;
+    overflow: hidden; 
+}
+
+.dynamic-thumbnail-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem; 
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+    line-height: 1.3;
+}

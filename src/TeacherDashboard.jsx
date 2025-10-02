@@ -1,37 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import LessonSkeleton from './LessonSkeleton'; // We can reuse the same skeleton!
-import { FiUsers, FiPlus } from 'react-icons/fi'; // Import necessary icons
+import { FiUsers, FiPlus, FiTag } from 'react-icons/fi'; // Import necessary icons
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import DynamicThumbnail from './DynamicThumbnail';
 
 const TeacherDashboard = ({ isLoading }) => {
     const navigate = useNavigate();
-    // Mock data for classes with more details
-    const classes = [
-        {
-            id: 'C101',
-            name: 'Grade 10 - Physics',
-            subject: 'Science',
-            students: 28,
-            avgPerformance: 82,
-            thumbnail: 'https://placehold.co/600x400/1d1d1f/f5f5f7?text=Physics&font=inter'
-        },
-        {
-            id: 'C102',
-            name: 'Grade 12 - Advanced Calculus',
-            subject: 'Mathematics',
-            students: 22,
-            avgPerformance: 71,
-            thumbnail: 'https://placehold.co/600x400/1d1d1f/f5f5f7?text=Calculus&font=inter'
-        },
-        {
-            id: 'C103',
-            name: 'Grade 9 - Chemistry',
-            subject: 'Science',
-            students: 31,
-            avgPerformance: 89,
-            thumbnail: 'https://placehold.co/600x400/1d1d1f/f5f5f7?text=Chemistry&font=inter'
-        },
-    ];
+    const [classes, setClasses] = useState([]);
+    const userid = localStorage.getItem("user-id");
+    useEffect(() => {
+        const fetchTeacherClasses = async () => {
+            try {
+                const response = await axios.post("http://127.0.0.1:8000/fetch-teacher-class", {
+                    user_id: userid
+                })
+                console.log(response.data);
+                setClasses(response.data.message);
+            }
+            catch (error) {
+                console.error("Error:", error);
+            }
+
+
+        };
+
+        fetchTeacherClasses();
+    }, [])
 
     return (
         <div className="dashboard-container">
@@ -54,34 +49,41 @@ const TeacherDashboard = ({ isLoading }) => {
                     Array.from({ length: 3 }).map((_, index) => <LessonSkeleton key={index} />)
                 ) : (
                     classes.map(cls => (
-                        <div key={cls.id} className="teacher-class-card">
-                            <div className="card-thumbnail">
-                                <img src={cls.thumbnail} alt={cls.name} />
-                                <span className="class-subject-tag">{cls.subject}</span>
-                            </div>
-                            <div className="card-content">
-                                <h3>{cls.name}</h3>
-                                <div className="class-stats">
-                                    <div className="stat-item">
-                                        <FiUsers />
-                                        <span>{cls.students} Students</span>
-                                    </div>
+                        <div
+                            key={cls._id}
+                            // Use the dynamic classId for navigation
+                            onClick={() => navigate(`/class/${cls.classId}`)}
+                            className="impressive-content-card"
+                        >
+                            {/* --- 1. Dynamic Thumbnail Header --- */}
+                            <div className="card-impressive-thumbnail">
+                                {/* These props match your data */}
+                                <DynamicThumbnail text={cls.className} seed={cls.subject} />
+
+                                <div className="card-subject-tag">
+                                    <FiTag />
+                                    <span>{cls.subject}</span>
                                 </div>
-                                <div className="class-progress">
-                                    <div className="progress-label">
-                                        <span>Avg. Performance</span>
-                                        <span>{cls.avgPerformance}%</span>
-                                    </div>
-                                    <div className="bar-container">
-                                        <div
-                                            className="bar-fill"
-                                            style={{ width: `${cls.avgPerformance}%` }}
-                                        ></div>
-                                    </div>
-                                </div>
-                                <button className="card-button" onClick={() => { navigate("/manageclass") }}>Manage Class</button>
                             </div>
 
+                            {/* --- 2. Detailed Content Body --- */}
+                            <div className="card-impressive-content">
+                                {/* Use 'className' for the title */}
+                                <h3 className="card-impressive-title">{cls.className}</h3>
+
+                                {/* --- IMPRESSIVE UPGRADE --- */}
+                                {/* Replaced the broken progress bar with the teacher's name */}
+
+                            </div>
+
+                            {/* --- 3. Clean Stats Footer --- */}
+                            <div className="card-impressive-footer">
+                                <div className="card-footer-stat">
+                                    <FiUsers />
+                                    {/* Use students.length to get a dynamic count */}
+                                    <span>{cls.students ? cls.students.length : 0} Student{cls.students ? (cls.students.length !== 1 ? 's' : '') : ''}</span>
+                                </div>
+                            </div>
                         </div>
                     ))
                 )}

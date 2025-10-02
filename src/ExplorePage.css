@@ -1,0 +1,119 @@
+/* --- Use Same Theme Variables --- */
+:root {
+    --bg-color: #f5f5f7;
+    --surface-color: #ffffff;
+    --primary-text-color: #1d1d1f;
+    --secondary-text-color: #6e6e73;
+    --border-color: #e5e5e7;
+    --accent-color: #000000;
+}
+
+/* --- Main Page Layout --- */
+.explore-page {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    min-height: calc(100vh - 60px - 70px); /* Adjust for navbars if present */
+    padding: 2rem;
+}
+
+.explore-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.explore-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.explore-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-text-color);
+    margin-bottom: 0.5rem;
+}
+
+.explore-header p {
+    font-size: 1.1rem;
+    color: var(--secondary-text-color);
+    margin: 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- Grid of Explore Cards --- */
+.explore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.explore-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes button to the bottom */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.explore-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.explore-card-content {
+    padding: 1.5rem;
+}
+
+.explore-card-category {
+    display: inline-block;
+    background-color: var(--bg-color);
+    color: var(--secondary-text-color);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.explore-card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.explore-card-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--secondary-text-color);
+    margin: 0;
+}
+
+.explore-card-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background-color: #fafafa;
+    border: none;
+    border-top: 1px solid var(--border-color);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.explore-card-button:hover {
+    background-color: var(--accent-color);
+    color: var(--surface-color);
+}

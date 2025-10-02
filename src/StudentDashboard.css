@@ -141,3 +141,94 @@
     font-size: 1.8rem; /* Make the icon larger */
     stroke-width: 2.5px;
 }
+
+/* --- ADD OR REPLACE WITH THESE STYLES IN YOUR CSS FILE --- */
+
+.impressive-content-card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px; /* Slightly larger radius for a softer look */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Crucial for rounded corners on the thumbnail */
+    cursor: pointer;
+    
+    /* The "supreme" transition for a buttery smooth effect */
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.impressive-content-card:hover {
+    transform: translateY(-8px) scale(1.02); /* A more pronounced "lift" */
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12); /* A deeper, softer shadow */
+}
+
+/* --- 1. Thumbnail Header Styling --- */
+.card-impressive-thumbnail {
+    width: 100%;
+    aspect-ratio: 16 / 8;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.impressive-content-card:hover .card-impressive-thumbnail img {
+    transform: scale(1.05); /* Subtle zoom on hover */
+}
+
+.card-subject-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: rgba(29, 29, 31, 0.7);
+    backdrop-filter: blur(8px);
+    color: var(--surface-color);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* --- 2. Content Body Styling --- */
+.card-impressive-content {
+    padding: 1.5rem;
+    flex-grow: 1; /* Ensures this section takes up available space */
+}
+
+.card-impressive-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    margin: 0 0 1rem 0;
+}
+
+.card-teacher-info {
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+}
+.card-teacher-info strong {
+    font-weight: 600;
+    color: var(--primary-text-color);
+    margin-left: 0.4rem;
+}
+
+/* --- 3. Footer Styling --- */
+.card-impressive-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background-color: #fafafa; /* A slightly off-white footer for contrast */
+}
+
+.card-footer-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+    font-weight: 500;
+}

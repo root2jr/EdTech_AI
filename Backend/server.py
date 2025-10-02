@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
@@ -11,6 +11,8 @@ import time
 from bson import ObjectId
 import random
 import string
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
 
 load_dotenv()
 app = FastAPI()
@@ -33,26 +35,42 @@ lessons = Database["Lessons"]
 schools = Database["Schools"]
 classes = Database["classes"]
 Analytics = Database["Analytics"]
-
+collection = Database["Topic-Details"]
+details = Database["Topic-Content"]
 
 class Login(BaseModel):
-    username: str
+    email: str
     password: str
+    role: str
     
 class Register(BaseModel):
     username: str
     password: str
     schoolid: str
     studentid: str
-    role: str 
+    role: str
+    email: str 
+    joined: str
+    
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() +  timedelta(days=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt   
     
 @app.post("/login")
 async def handle_login(data:Login):
-    response = await login.find_one({"username": data.username})
+    response = await login.find_one({"email": data.email})
     password = data.password
     if response:
-        if pass_context.verify(password, response["password"]):
-            return {"message": "Login Successful"}
+        if pass_context.verify(password, response["password"]) and data.role == response["role"]:
+            jwt = create_access_token({"sub":data.email})
+            return {"message": "Login Successful","user_id":response["user_id"],"jwt":jwt}
         else:
             return {"message":"Invalid Credentials"}
     else:
@@ -72,23 +90,23 @@ def generate_class_id():
 
 @app.post("/sign-in")
 async def handle_register(data:Register):
-    response = await login.find_one({"username": data.username})
-    print(data)
+    response = await login.find_one({"email": data.email})
     if response:
         return {"message": "User Already Registered"}
     else:
         school_authenticity = await schools.find_one({"school_id":data.schoolid})
         if school_authenticity:
-            print("School Authenticity Verified.")
             if data.role == "Student":
-                print("Student IF Statement Works")
                 students = school_authenticity["students"]
                 saved = False                
                 for student in students:
                    if student["student_id"] == data.studentid:
+                      reg = await login.find_one({"student_id":data.studentid})
+                      if reg:
+                          return {"message": "User Already Registered With This Student ID."}
                       password = pass_context.hash(data.password)
                       user_id = generate_class_id()
-                      add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role, "school": data.schoolid ,"user_id": user_id})
+                      add_user = await login.insert_one({"email":data.email,"username": data.username, "password": password, "role": data.role, "school_id": data.schoolid ,"user_id": user_id,"student_id":data.studentid,"joined":data.joined})
                       return {"message": "User Registered Sucessfully"}
                 if not saved:
                    return {"message": "Invalid Student id."}
@@ -97,9 +115,12 @@ async def handle_register(data:Register):
                 saved = False
                 for teacher in teachers:
                    if teacher["faculty_id"] == data.studentid:
+                      reg = await login.find_one({"staff_id":data.studentid})
+                      if reg:
+                          return {"message": "User Already Registered With This Student ID."}
                       password = pass_context.hash(data.password)
                       user_id = generate_class_id()                      
-                      add_user = await login.insert_one({"username": data.username, "password": password, "role": data.role, "school": data.schoolid, "user_id": user_id})
+                      add_user = await login.insert_one({"email":data.email,"username": data.username, "password": password, "role": data.role, "school_id": data.schoolid, "user_id": user_id, "staff_id":data.studentid,"joined":data.joined})
                       return {"message": "User Registered Sucessfully"}
                 if not saved:
                    return {"message": "Invalid Student id."}
@@ -122,7 +143,7 @@ async def ai_response(data: AI_request):
         payload = {
             "model": "llama-3.1-8b-instant",
             "messages": [
-                {"role": "system", "content": f"You are a helpful assistant."},
+                {"role": "system", "content": f"You are a helpful assistant. "},
                 {"role": "user", "content": data.prompt}
             ],
             "temperature": 0.7,
@@ -142,8 +163,10 @@ class lesson(BaseModel):
     url: str
     subject: str
     description: str    
-    username: str
+    user_id: str
     classid: str
+    lesson_id: str
+    
     
     
 def get_video_id(url: str) -> str:
@@ -198,7 +221,7 @@ async def new_ai_response(transcription:str):
             "model": "llama-3.1-8b-instant",
             "messages": [
                 {"role": "system", "content": f"You are a helpful assistant."},
-                {"role": "user", "content": f"Create a detailed summary for this transcription:{transcription}"}
+                {"role": "user", "content": f"Create a detailed summary for this transcription:{transcription}, Remember the response should not exceed 500 tokens."}
             ],
             "temperature": 0.7,
             "max_tokens": 500
@@ -332,7 +355,7 @@ async def create_new_lesson(data:lesson):
         summary = await new_ai_response(truncated_transcript)
         mcqs = await ask_ai_mcq(truncated_transcript)
         lesson_id = generate_class_id()
-        response = await lessons.insert_one({"lesson_id": data.title,"title": data.title, "url": data.url, "subject": data.subject, "description": data.description, "username": data.username, "classid": data.classid, "thumbnail": "https://placehold.co/600x400/e2e8f0/4a5568?text=Algebra", "summary": summary, "transcription": truncated_transcript,"mcqs":mcqs})
+        response = await lessons.insert_one({"lesson_id": data.lesson_id,"title": data.title, "url": data.url, "subject": data.subject, "description": data.description, "user_id": data.user_id, "classid": data.classid, "summary": summary, "transcription": truncated_transcript,"mcqs":mcqs})
         return {"message": "Lesson Created Successfully."}
 
 class findLesson(BaseModel):
@@ -361,10 +384,17 @@ class Createclass(BaseModel):
     description: str
     teacher: str
     schoolid: str
+    user_id: str
+
+async def handle_teacher_analytics_one(userid:str, classid:str):
+    response = await Analytics.find_one_and_update({"user_id":userid},{"$inc":{"classes":1}},upsert=True)
+    addclass = await login.find_one_and_update({"user_id":userid},{"$addToSet":{"classes":classid}})
+    return True
 
 @app.post("/createclass")
 async def create_class(data:Createclass):
-        response = await classes.insert_one({"classId": data.classId, "className": data.className,"subject": data.subject, "description": data.description, "schoolid": data.schoolid, "teacher": data.teacher})
+        response = await classes.insert_one({"classId": data.classId, "className": data.className,"subject": data.subject, "description": data.description, "schoolid": data.schoolid, "teacher": data.teacher, "creator": data.user_id})
+        await handle_teacher_analytics_one(data.user_id, data.classId)
         return {"message": "Class Created Successfully"}
     
 
@@ -393,16 +423,168 @@ class Completed_lesson(BaseModel):
     user_id: str
     lesson_id: str
     quiz_marks: int
+    
+
+    
+    
         
- 
+async def handle_student_analytics(userid: str,lessonid: str):
+    response = await login.find_one({"user_id": userid})
+    lessonsdone = response["lessons"]
+    lessonsCompleted = len(response["lessons"])
+    print(lessonsCompleted)
+    scores = [l["quiz_marks"] for l in lessonsdone]
+    averageScore = (round(sum(scores) / len(scores))*20 if scores else 0)
+    weeklygoal = round(sum(scores)/7)*20
+    subject_scores = {}
+    recentActivity = []
+    
+    for l in lessonsdone:
+       print(l["lesson_id"])
+       lesson_doc = await lessons.find_one({"lesson_id": l["lesson_id"]})
+       subject = lesson_doc["subject"]
+       
+       if subject not in subject_scores:
+           subject_scores[subject] = []
+           
+       subject_scores[subject].append(l["quiz_marks"])
+    proficiency = [
+           {"subject": subj, "score": sum(marks)/len(marks)}
+           for subj, marks in subject_scores.items()]
+    insert_analytics = await Analytics.find_one_and_update({"student_id":userid},{"$set":{"lessonsCompleted":lessonsCompleted,"averageScore":averageScore,"weeklyGoal":weeklygoal,"proficiency":proficiency}},upsert=True)
+    insert_completion = await lessons.find_one_and_update({"lesson_id":lessonid},{"$addToSet":{"completed_students":userid}})
+    return True
+
+
+
 
 @app.post("/lessoncompleted")
 async def mark_lesson_complete(data:Completed_lesson):
     obj = {"user_id": data.user_id, "lesson_id": data.lesson_id, "quiz_marks": data.quiz_marks}
-    response = login.find_one_and_update({"user_id": data.user_id},{"$addToSet": {"lessons":obj}})
-    return {"message": "Lesson Completed Updated."}
+    response = await login.find_one_and_update({"user_id": data.user_id},{"$addToSet": {"lessons":obj}})
+    await handle_student_analytics(data.user_id,data.lesson_id)
+    return {"message": "Lesson Completion Updated."}
         
+        
+        
+class Joinclass(BaseModel):
+    user_id: str
+    class_id: str
+@app.post("/joinclass")
+async def handle_join_class(data:Joinclass):
+    user = await login.find_one({"user_id": data.user_id})
+    targetclass = await classes.find_one({"classId": data.class_id})
+    if user["school_id"] == targetclass["schoolid"]:
+        response = await classes.find_one_and_update({"classId": data.class_id},{"$addToSet": {"students":data.user_id}} )
+        response2 = await login.find_one_and_update({"user_id": data.user_id},{"$addToSet": {"classes":data.class_id}} )
+        return {"message": "Class Joined Successfully"}
+    else:
+        return {"message": "Unable to Join class"}
+
+class fetch_class(BaseModel):
+    user_id: str    
+@app.post("/fetch-classes")
+async def fetch_classes(data:fetch_class):
+    response = await login.find_one({"user_id": data.user_id})
+    user_classes = response["classes"]
     
-    
+    finalclass = []
+    for clas in user_classes:
+        newclass  = await classes.find_one({"classId": clas})
+        if not newclass: 
+            return {"message": "unable to find classes."}
+        newclass["_id"] = str(newclass["_id"])
+        finalclass.append(newclass)
+    return {"message": finalclass}
+
+class TeacherClass(BaseModel):
+    user_id: str    
+@app.post("/fetch-teacher-class")
+async def fetch_teacher_class(data:TeacherClass):
+    response = await classes.find({"creator": data.user_id}).to_list(length=None)
+    for res in response:
+        res["_id"] = str(res["_id"])
+    return {"message": response}
+
+async def handle_class_wise_analytics(userid: str):
+    response = await classes.find({"creator": userid}).to_list(length=None)
+    class_wise = []
+    for active_class in response:
+        active_class_lessons = await lessons.find({"classid":active_class["classId"]}).to_list(length=None)
+        if not active_class_lessons:
+            continue
+        total_students = 0
+        completed_students = 0
+        for less in active_class_lessons:
+            completed_students += len(less["completed_students"])
+        total_students += len(active_class["students"])            
+        if total_students > 0:
+           completion_rate = (completed_students / total_students) * 100
+        else:
+           completion_rate = 0  
+        class_wise.append({"classid":active_class["classId"],"completion_rate": completion_rate})
+    return class_wise 
 
 
+
+
+
+
+
+async def handle_teacher_analytics(userid: str):
+    teacher_classes = await classes.find({"creator":userid}).to_list(length=None)
+    active_classes = len(teacher_classes)
+    response = await lessons.find({"user_id":userid}).to_list(length=None)
+    completed_students = 0
+    total_students = 0
+    for entry in response:
+       completed_students += len(entry.get("completed_students") or [])
+       class_id = await classes.find_one({"classId":entry["classid"]})
+       total_students += len(class_id["students"])
+    if total_students > 0:
+       completion_rate = (completed_students / total_students) * 100
+    else:
+       completion_rate = 0
+    class_wise_analytics = await handle_class_wise_analytics(userid)
+    update_analytics = await Analytics.find_one_and_update({"user_id":userid},{"$set":{"user_id":userid,"total_students": total_students, "completion_rate": completion_rate, "active_classes": active_classes,"class_wise_analytics":class_wise_analytics}},upsert=True)
+    return {"total_students": total_students, "completion_rate": completion_rate, "active_classes": active_classes,"class_wise_analytics":class_wise_analytics}
+
+class FetchTeacherAnalytics(BaseModel):
+    user_id: str
+    
+@app.post("/fetch-teacher-analytics")
+async def fetch_teacher_analytics(data:FetchTeacherAnalytics):
+    response = await handle_teacher_analytics(data.user_id)
+    return {"message":response}
+
+
+@app.get("/content/{content_id}")
+def get_content(content_id: str):
+    result = collection.find_one({"id": content_id}, {"_id": 0})
+    if not result:
+        raise HTTPException(status_code=404, detail="Content not found")
+    return result
+
+@app.get("/fetchtopics")
+async def get_all_contents():
+   response = await collection.find().to_list(length=10)
+   for topic in response:
+       topic["_id"] = str(topic["_id"])
+   return {"message": response}
+
+@app.get("/fetchtopicdetails")
+async def get_topic_details():
+    response = await details.find_one({})
+    response["_id"] = str(response["_id"])
+    return {"message": response}
+
+
+class User_Details(BaseModel):
+    user_id: str
+
+@app.post("/fetch-user-details")
+async def fetch_user_details(data:User_Details):
+    response = await login.find_one({"user_id": data.user_id})
+    logo = response["username"]
+    newlogo = logo[0:2]
+    return {"name": response["username"],"email":response["email"],"role":response["role"],"joinDate": response["joined"], "avatarUrl": f'https://placehold.co/128x128/1d1d1f/f5f5f7?text={newlogo}&font=inter'}

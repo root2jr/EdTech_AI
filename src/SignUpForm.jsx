@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const SignUpForm = () => {
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [school, setSchool] = useState('');
@@ -16,15 +17,30 @@ const SignUpForm = () => {
             alert("Passwords don't match!");
             return;
         }
+        const date = new Date("2025-03-10"); // example date
+
+        const formatted = date.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        });
         try {
-            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/sign-in", {
+            const response = await axios.post("http://127.0.0.1:8000/sign-in", {
                 username: username,
+                email: email,
                 password: password,
                 schoolid: school,
                 studentid: student,
-                role: role, 
+                role: role,
+                joined: formatted
             });
             console.log(response.data);
+            if (response.data.message == "User Registered Sucessfully") {
+                alert("User Registered Successfully. You may now login with the credentials.")
+                navigate("/");
+            } else {
+                alert(response.data.message);
+            }
         }
         catch (error) {
             console.error("Error:", error);
@@ -41,6 +57,16 @@ const SignUpForm = () => {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="signup-username">Email</label>
+                <input
+                    id="signup-username"
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                 />
             </div>
@@ -75,7 +101,7 @@ const SignUpForm = () => {
                 />
             </div>
             <div className="form-group">
-                <label htmlFor="confirm-password">Student ID</label>
+                <label htmlFor="confirm-password">{role} ID</label>
                 <input
                     id="student-id"
                     type="text"

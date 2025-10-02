@@ -37,7 +37,6 @@ const ManageClassPage = () => {
 
     return (
         <div className="manage-class-page">
-            {/* --- Class Header --- */}
             <div className="class-header-card">
                 <div className="class-header-top">
                     <button className="back-button" onClick={() => navigate("/mainpage")}><FiArrowLeft /> Back to Dashboard</button>
@@ -61,7 +60,6 @@ const ManageClassPage = () => {
                 </div>
             </div>
 
-            {/* --- Student Roster Section --- */}
             <div className="student-roster-card">
                 <div className="roster-controls">
                     <h2>Student Roster</h2>

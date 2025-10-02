@@ -111,7 +111,6 @@
     color: var(--secondary-text-color);
 }
 
-
 /* --- Student Roster Card --- */
 .student-roster-card {
     background-color: var(--surface-color);
@@ -158,13 +157,13 @@
     font-size: 0.9rem;
 }
 
-/* --- Student List --- */
+/* --- Student List (Desktop) --- */
 .student-list-item {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr;
+    grid-template-columns: minmax(200px, 2fr) 1.5fr 1fr;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem 0;
+    gap: 1.5rem;
+    padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     font-size: 0.9rem;
 }
@@ -174,6 +173,7 @@
     color: var(--secondary-text-color);
     text-transform: uppercase;
     font-size: 0.8rem;
+    padding: 0.5rem 1rem;
 }
 
 .student-list-item:last-child {
@@ -200,6 +200,21 @@
     gap: 1rem;
 }
 
+.bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--bg-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background-color: var(--accent-color);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
 .attention-tag {
     padding: 4px 10px;
     border-radius: 12px;
@@ -223,66 +238,157 @@
     color: #ef4444;
 }
 
-/* --- Responsiveness --- */
-@media (max-width: 768px) {
-    .class-title-header h1 {
-        font-size: 2rem;
+
+/* ========================================= */
+/* --- SUPREMELY RESPONSIVE ENHANCEMENTS --- */
+/* ========================================= */
+
+/* --- TABLET VIEW --- */
+@media (max-width: 992px) {
+    .manage-class-page {
+        padding: 1.5rem 1rem;
     }
 
     .student-list-item {
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: minmax(180px, 1.5fr) 1fr 1fr;
+        gap: 1rem;
     }
 
     .student-progress span {
         display: none;
     }
 
-    /* Hide percentage text on tablets */
+    /* Hide percentage text to save space */
 }
 
-@media (max-width: 600px) {
+/* --- MOBILE VIEW --- */
+@media (max-width: 768px) {
+    .class-title-header h1 {
+        font-size: 2rem;
+    }
+
+    .class-title-header {
+        margin: 1.5rem auto;
+    }
+
+    .class-stats-grid {
+        margin-bottom: 2rem;
+    }
+
+    /* Hide the desktop list header */
+    .student-list-item.header {
+        display: none;
+    }
+
+    .student-list {
+        background-color: transparent;
+    }
+
+    /* Transform each student row into a self-contained card */
+    .student-list-item {
+        display: block;
+        /* Ditch the complex grid from desktop */
+        padding: 1rem;
+        background-color: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .student-list-item:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Style the top part of the card (avatar + name) */
+    .student-name {
+        padding-bottom: 0.75rem;
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .student-avatar {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* Style the data rows (Progress, Attention) */
+    .student-progress,
+    .student-attention {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        /* Add some vertical spacing */
+    }
+
+    /* Add clear text labels for mobile using pseudo-elements */
+    .student-progress::before,
+    .student-attention::before {
+        content: attr(data-label);
+        color: var(--secondary-text-color);
+        font-weight: 500;
+    }
+
+    .student-progress::before {
+        content: 'Progress';
+    }
+
+    .student-attention::before {
+        content: 'Attention';
+    }
+
+    .student-progress span {
+        display: block;
+    }
+
+    /* Ensure percentage text is visible */
+    .bar-container {
+        max-width: 100px;
+    }
+}
+
+/* --- SMALL MOBILE VIEW --- */
+@media (max-width: 480px) {
     .manage-class-page {
         padding: 1rem;
     }
 
     .page-header {
-        margin-bottom: 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
     }
 
-    .student-list-item {
-        grid-template-columns: 1fr;
-        /* Stack columns on mobile */
-        gap: 0.75rem;
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        margin-bottom: 1rem;
+    .back-button,
+    .add-student-button {
+        justify-content: center;
     }
 
-    .student-list-item.header {
-        display: none;
+    .roster-controls {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    /* Hide header on mobile */
-    .student-list-item:last-child {
-        margin-bottom: 0;
-    }
-
-    .student-progress,
-    .student-attention {
-        grid-column: 1;
-        /* Ensure they take full width */
+    .search-bar {
+        width: 100%;
+        box-sizing: border-box;
     }
 }
 
-/* Loading State */
-.loading-state {
+/* --- Loading and Modal States (No changes needed) --- */
+.loading-state,
+.error-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 80vh;
     color: var(--secondary-text-color);
+    text-align: center;
+    padding: 1rem;
 }
 
 .loading-spinner {
@@ -296,7 +402,8 @@
     }
 }
 
-.loading-state p {
+.loading-state p,
+.error-state {
     margin-top: 1rem;
     font-size: 1.1rem;
 }
@@ -314,6 +421,7 @@
     justify-content: center;
     z-index: 2000;
     animation: fadeIn 0.3s ease-in-out;
+    padding: 1rem;
 }
 
 @keyframes fadeIn {
@@ -352,7 +460,6 @@
 .success-modal-icon {
     font-size: 3rem;
     color: #28a745;
-    /* A splash of color for success */
     margin-bottom: 1rem;
 }
 
@@ -387,6 +494,7 @@
     color: var(--primary-text-color);
     margin: 0.5rem 0 1rem 0;
     letter-spacing: 1px;
+    word-break: break-all;
 }
 
 .copy-id-button {
@@ -416,4 +524,117 @@
     color: var(--surface-color);
     border: none;
     transition: background-color 0.2s ease;
+}
+
+/* --- TIGHTER MOBILE VIEW (<600px) --- */
+@media (max-width: 600px) {
+
+    /* General page padding */
+    .manage-class-page {
+        padding: 0.75rem;
+    }
+
+    /* Header buttons */
+    .back-button,
+    .add-student-button {
+        flex: 1;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    /* Class title */
+    .class-title-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .class-title-header p {
+        font-size: 0.95rem;
+    }
+
+    /* Stats grid */
+    .class-stats-grid {
+        grid-template-columns: 1fr;
+        /* stack vertically */
+        gap: 1rem;
+    }
+
+    .stat-card-mini {
+        padding: 1rem;
+    }
+
+    .stat-value-mini {
+        font-size: 1.5rem;
+    }
+
+    /* Roster controls */
+    .roster-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .search-bar {
+        width: 100%;
+        padding: 0.4rem 0.8rem;
+    }
+
+    .search-bar input {
+        font-size: 0.85rem;
+    }
+
+    /* Student card tweaks */
+    .student-list-item {
+        padding: 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .student-name {
+        font-size: 0.9rem;
+    }
+
+    .student-avatar {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Progress bar scaling */
+    .bar-container {
+        max-width: 80px;
+        height: 6px;
+    }
+
+    .student-progress span {
+        font-size: 0.8rem;
+    }
+
+    /* Attention tag scaling */
+    .attention-tag {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+
+    /* Modal adjustments */
+    .success-modal-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .success-modal-card h2 {
+        font-size: 1.3rem;
+    }
+
+    .success-modal-card p {
+        font-size: 0.9rem;
+    }
+
+    .create-another-button {
+        font-size: 0.9rem;
+        padding: 0.8rem;
+    }
 }

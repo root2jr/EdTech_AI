@@ -13,6 +13,7 @@ import random
 import string
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+from urllib.parse import urlparse, parse_qs
 
 load_dotenv()
 app = FastAPI()
@@ -168,20 +169,6 @@ class lesson(BaseModel):
     lesson_id: str
     
     
-    
-def get_video_id(url: str) -> str:
-    # Patterns for different formats
-    patterns = [
-        r"v=([a-zA-Z0-9_-]{11})",          # normal watch URL
-        r"embed/([a-zA-Z0-9_-]{11})",      # embed URL
-        r"shorts/([a-zA-Z0-9_-]{11})"      # shorts URL
-    ]
-    
-    for pattern in patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return None   
 
 
 
@@ -231,7 +218,6 @@ async def new_ai_response(transcription:str):
         if response.status_code == 200:
             completion = response.json()
             text_response = completion["choices"][0]["message"]["content"]
-            print(text_response)
             return completion["choices"][0]["message"]["content"]
         else:
             print("Error:", response.status_code, response.text)
@@ -344,18 +330,36 @@ async def ask_ai_mcq(transcription):
         print("Error:", response.status_code, response.text)
         
 
+def to_embed_link(yt_url: str) -> str:
+    parsed = urlparse(yt_url)
+
+    # Case 1: Short share links (youtu.be/VIDEO_ID?extra=params)
+    if "youtu.be" in parsed.netloc:
+        video_id = parsed.path.lstrip("/")
+
+    # Case 2: Normal YouTube links (youtube.com/watch?v=VIDEO_ID)
+    elif "youtube.com" in parsed.netloc:
+        qs = parse_qs(parsed.query)
+        video_id = qs.get("v", [None])[0]
+
+    else:
+        raise ValueError("Not a valid YouTube URL")
+
+    if not video_id:
+        raise ValueError("Could not extract video ID")
+
+    return f"https://www.youtube.com/embed/{video_id}"
+
 @app.post("/newlesson")
 async def create_new_lesson(data:lesson):
-        print("Call Received")
-        video_id = get_video_id(data.url)
-        print("Got Video ID:", video_id)
+        embed_link = to_embed_link(data.url)
         transcript = start_transcription(data.url)
         MAX_LENGTH = 5000
         truncated_transcript = transcript[:MAX_LENGTH]
         summary = await new_ai_response(truncated_transcript)
         mcqs = await ask_ai_mcq(truncated_transcript)
         lesson_id = generate_class_id()
-        response = await lessons.insert_one({"lesson_id": data.lesson_id,"title": data.title, "url": data.url, "subject": data.subject, "description": data.description, "user_id": data.user_id, "classid": data.classid, "summary": summary, "transcription": truncated_transcript,"mcqs":mcqs})
+        response = await lessons.insert_one({"lesson_id": data.lesson_id,"title": data.title, "url": embed_link, "subject": data.subject, "description": data.description, "user_id": data.user_id, "classid": data.classid, "summary": summary, "transcription": truncated_transcript,"mcqs":mcqs})
         return {"message": "Lesson Created Successfully."}
 
 class findLesson(BaseModel):
@@ -431,8 +435,7 @@ class Completed_lesson(BaseModel):
 async def handle_student_analytics(userid: str,lessonid: str):
     response = await login.find_one({"user_id": userid})
     lessonsdone = response["lessons"]
-    lessonsCompleted = len(response["lessons"])
-    print(lessonsCompleted)
+    lessonsCompleted = len(response.get("lessons") or [])
     scores = [l["quiz_marks"] for l in lessonsdone]
     averageScore = (round(sum(scores) / len(scores))*20 if scores else 0)
     weeklygoal = round(sum(scores)/7)*20
@@ -516,8 +519,8 @@ async def handle_class_wise_analytics(userid: str):
         total_students = 0
         completed_students = 0
         for less in active_class_lessons:
-            completed_students += len(less["completed_students"])
-        total_students += len(active_class["students"])            
+            completed_students += len(less.get("completed_students") or [])
+        total_students += len(active_class.get("students") or [] )            
         if total_students > 0:
            completion_rate = (completed_students / total_students) * 100
         else:

@@ -17,7 +17,7 @@ const SignUpForm = () => {
             alert("Passwords don't match!");
             return;
         }
-        const date = new Date("2025-03-10"); // example date
+        const date = new Date(); // example date
 
         const formatted = date.toLocaleDateString("en-US", {
             month: "long",

@@ -60,7 +60,7 @@ const JoinClassPage = () => {
     const handleJoinRequest = async (classId) => {
         setRequestedClasses(prev => new Set(prev).add(classId));
         try {
-            const response = await axios.post("https://edtech-ai-mc8u.onrender.com/joinclass", {
+            const response = await axios.post("http://127.0.0.1:8000/joinclass", {
                 user_id: userid,
                 class_id: classId
             });
@@ -88,6 +88,8 @@ const JoinClassPage = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+
+
                 </div>
 
                 <div className="class-list-container">

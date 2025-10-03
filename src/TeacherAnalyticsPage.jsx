@@ -74,7 +74,7 @@ const TeacherAnalyticsPage = () => {
                 {/* --- Progress Circle for Overall Completion Rate --- */}
                 <div className="analytics-card progress-card">
                     <div className="progress-circle" style={progressCircleStyle(teacherData?.completion_rate ?? 0)}>
-                        <div className="progress-value">{teacherData?.completion_rate ?? 0}%</div>
+                        <div className="progress-value">{(teacherData?.completion_rate).toFixed(0) ?? 0}%</div>
                     </div>
                     <div className="progress-label">Overall Completion Rate</div>
                 </div>

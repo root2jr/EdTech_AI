@@ -14,6 +14,9 @@ import string
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 load_dotenv()
 app = FastAPI()
@@ -468,6 +471,25 @@ async def mark_lesson_complete(data:Completed_lesson):
     await handle_student_analytics(data.user_id,data.lesson_id)
     return {"message": "Lesson Completion Updated."}
         
+notification_mail = os.getenv("email")
+notification_password = os.getenv("password")
+
+def send_email(to_email: str, subject: str, body: str):
+    sender_email = notification_mail
+    password = notification_password  
+    print("Mail Function Works, Data:",password,to_email, subject, body)
+    print(sender_email)
+    msg = MIMEMultipart()
+    msg["From"] = sender_email
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(sender_email, password)
+        server.send_message(msg)
+
+
         
         
 class Joinclass(BaseModel):
@@ -477,9 +499,11 @@ class Joinclass(BaseModel):
 async def handle_join_class(data:Joinclass):
     user = await login.find_one({"user_id": data.user_id})
     targetclass = await classes.find_one({"classId": data.class_id})
+    staff = await login.find_one({"user_id":targetclass["creator"]})
     if user["school_id"] == targetclass["schoolid"]:
         response = await classes.find_one_and_update({"classId": data.class_id},{"$addToSet": {"students":data.user_id}} )
         response2 = await login.find_one_and_update({"user_id": data.user_id},{"$addToSet": {"classes":data.class_id}} )
+        send_email(staff["email"],"New Student Joined Your Class!",f"New Student Joined Your Class! \nClass ID: '{data.class_id}' \nClass-Name: '{targetclass["className"]}' \nStudent Name: '{user["username"]}'")
         return {"message": "Class Joined Successfully"}
     else:
         return {"message": "Unable to Join class"}

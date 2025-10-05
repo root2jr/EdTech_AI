@@ -14,6 +14,8 @@ import string
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
+import yagmail
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -41,6 +43,7 @@ classes = Database["classes"]
 Analytics = Database["Analytics"]
 collection = Database["Topic-Details"]
 details = Database["Topic-Content"]
+
 
 class Login(BaseModel):
     email: str
@@ -475,20 +478,11 @@ notification_mail = os.getenv("email")
 notification_password = os.getenv("password")
 
 def send_email(to_email: str, subject: str, body: str):
-    sender_email = notification_mail
+    email = notification_mail
     password = notification_password  
-    print("Mail Function Works, Data:",password,to_email, subject, body)
-    print(sender_email)
-    msg = MIMEMultipart()
-    msg["From"] = sender_email
-    msg["To"] = to_email
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain"))
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(sender_email, password)
-        server.send_message(msg)
-
+    ya = yagmail.SMTP(email,password)
+    send = ya.send(to=to_email, subject=subject, contents=body)
+    return True
 
         
         

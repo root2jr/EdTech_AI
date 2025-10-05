@@ -477,12 +477,7 @@ async def mark_lesson_complete(data:Completed_lesson):
 notification_mail = os.getenv("email")
 notification_password = os.getenv("password")
 
-def send_email(to_email: str, subject: str, body: str):
-    email = notification_mail
-    password = notification_password  
-    ya = yagmail.SMTP(email,password)
-    send = ya.send(to=to_email, subject=subject, contents=body)
-    return True
+
 
         
         
@@ -497,8 +492,6 @@ async def handle_join_class(data:Joinclass):
     if user["school_id"] == targetclass["schoolid"]:
         response = await classes.find_one_and_update({"classId": data.class_id},{"$addToSet": {"students":data.user_id}} )
         response2 = await login.find_one_and_update({"user_id": data.user_id},{"$addToSet": {"classes":data.class_id}} )
-        send_email(staff["email"],"New Student Joined Your Class!",f"New Student Joined Your Class! \nClass ID: '{data.class_id}' \nClass-Name: '{targetclass["className"]}' \nStudent Name: '{user["username"]}'")
-        send_email(user["email"],"Joined New Class!",f"Your New Class Details! \nClass ID: '{data.class_id}' \nClass-Name: '{targetclass["className"]}'")
         return {"message": "Class Joined Successfully"}
     else:
         return {"message": "Unable to Join class"}

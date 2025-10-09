@@ -19,12 +19,7 @@ const TeacherAnalyticsPage = () => {
                 })
                 console.log(response.data);
                 setTeacherData(response.data.message);
-
-
-                setTimeout(() => {
-                    setIsLoading(false);
-                }, 1500);
-
+                setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching teacher analytics:", error);
                 setTeacherData(null);
@@ -89,7 +84,7 @@ const TeacherAnalyticsPage = () => {
                                     <div className="proficiency-label">
                                         {/* Display class name or ID as a fallback */}
                                         <span>{item.className || item.classid}</span>
-                                        <span>{item.completion_rate}%</span>
+                                        <span>{(item.completion_rate).toFixed(0)}%</span>
                                     </div>
                                     <div className="bar-container">
                                         <div className="bar-fill" style={{ width: `${item.completion_rate}%` }}></div>

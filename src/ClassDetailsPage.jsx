@@ -83,7 +83,7 @@ const ClassDetailsPage = () => {
                 </button>
 
                 <div className="class-header-card">
-                    <div className="card-impressive-thumbnail">
+                    <div className="card-impressive-thumbnail" style={{borderRadius:10}}>
                         <DynamicThumbnail text={classDetails.className} seed={classDetails.subject} />
                         <div className="card-subject-tag">
                             <FiTag />

@@ -15,8 +15,10 @@
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-color);
     min-height: 100vh;
-    padding-top: 60px; /* Space for TopNav */
-    padding-bottom: 70px; /* Space for BottomNav */
+    padding-top: 60px;
+    /* Space for TopNav */
+    padding-bottom: 70px;
+    /* Space for BottomNav */
 }
 
 .main-content {
@@ -115,6 +117,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .content-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
@@ -151,7 +154,8 @@
 }
 
 .list-item .card-button {
-    margin-top: 0; /* Adjust button margin for list view */
+    margin-top: 0;
+    /* Adjust button margin for list view */
 }
 
 .card-button:hover {
@@ -167,9 +171,12 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
     }
@@ -179,16 +186,19 @@
     border-color: transparent;
     box-shadow: none;
 }
+
 .skeleton-title {
     width: 70%;
     height: 24px;
     margin-bottom: 0.75rem;
 }
+
 .skeleton-text {
     width: 50%;
     height: 16px;
     margin-bottom: 1.25rem;
 }
+
 .skeleton-button {
     width: 100px;
     height: 40px;
@@ -258,7 +268,8 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Ensures thumbnail corners are rounded */
+    overflow: hidden;
+    /* Ensures thumbnail corners are rounded */
 }
 
 .teacher-class-card:hover {
@@ -267,14 +278,16 @@
 }
 
 .teacher-class-card .card-thumbnail {
-    position: relative; /* For positioning the subject tag */
+    position: relative;
+    /* For positioning the subject tag */
 }
 
 .class-subject-tag {
     position: absolute;
     top: 12px;
     left: 12px;
-    background-color: rgba(29, 29, 31, 0.7); /* Semi-transparent background */
+    background-color: rgba(29, 29, 31, 0.7);
+    /* Semi-transparent background */
     backdrop-filter: blur(5px);
     color: var(--surface-color);
     padding: 4px 8px;
@@ -304,3 +317,110 @@
     margin-bottom: 1.5rem;
 }
 
+/* --- Styles for TeacherDashboard.jsx --- */
+
+/* Add this to a container for the buttons if needed */
+.header-buttons-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Make the card a positioning context for the menu */
+.impressive-content-card {
+    position: relative;
+    /* ... your existing styles for this card ... */
+}
+
+/* A new wrapper to make the main content clickable */
+.card-clickable-area {
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Options Menu Styling --- */
+.card-options-container {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 5;
+    /* Ensure it's above the thumbnail */
+}
+
+.card-options-button {
+    background: rgba(245, 245, 247, 0.7);
+    /* --bg-color with transparency */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary-text-color);
+    transition: background-color 0.2s ease;
+}
+
+.card-options-button:hover {
+    background-color: rgba(245, 245, 247, 0.9);
+}
+
+.card-options-button svg {
+    font-size: 1.25rem;
+}
+
+/* The dropdown menu itself */
+.card-options-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    /* Position it right below the button */
+    right: 0;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    width: 220px;
+    padding: 0.5rem 0;
+    z-index: 10;
+    animation: fadeInMenu 0.2s ease-out;
+}
+
+@keyframes fadeInMenu {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Individual menu items */
+.menu-option {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.menu-option:hover {
+    background-color: var(--bg-color);
+}
+
+/* Special styling for destructive actions */
+.menu-option.destructive {
+    color: #ef4444;
+}
+
+.menu-option.destructive:hover {
+    background-color: #feebeb;
+    color: #b91c1c;
+}

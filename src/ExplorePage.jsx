@@ -3,21 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
 import './ExplorePage.css';
 import axios from 'axios';
+import ExploreCardSkeleton from './ExploreCardSkeleton';
 
 // Rich mock data for general learning content
 
 
 const ExplorePage = () => {
-    const [exploreTopics,setExploreTopics] = useState([]);
+    const [exploreTopics, setExploreTopics] = useState([]);
+    const [loader, setLoader] = useState(false);
     const navigate = useNavigate();
     useEffect(() => {
-          const fetch_data = async () => {
+        const fetch_data = async () => {
+            setLoader(true);
             const response = await axios.get("https://edtech-ai-mc8u.onrender.com/fetchtopics");
             setExploreTopics(response.data.message);
             console.log(response.data.message);
-          }
-          fetch_data();
-    },[])
+            setLoader(false);
+        }
+        fetch_data();
+    }, [])
 
     const handleExplore = (topicId) => {
         // This now navigates to your new dynamic page
@@ -31,7 +35,7 @@ const ExplorePage = () => {
                     <h1>Explore New Topics</h1>
                     <p>Expand your knowledge beyond the syllabus with these curated learning modules.</p>
                 </div>
-
+                {loader && <ExploreCardSkeleton />}
                 <div className="explore-grid">
                     {exploreTopics.map(topic => (
                         <div key={topic.id} className="explore-card">

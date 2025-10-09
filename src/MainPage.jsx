@@ -4,30 +4,30 @@ import StudentDashboard from './StudentDashboard';
 import TeacherDashboard from './TeacherDashboard';
 import './MainPage.css';
 // 1. Import the new icon for the Explore page
-import { FiHome, FiBarChart2, FiCpu, FiUser, FiCompass } from 'react-icons/fi'; 
+import { FiHome, FiBarChart2, FiCpu, FiUser, FiCompass } from 'react-icons/fi';
 import AIChatPage from './AIChatPage';
 import AnalyticsPage from './AnalyticsPage';
 import ProfilePage from './ProfilePage';
 import { useLocation, useNavigate } from 'react-router-dom';
 // 2. Import the new ExplorePage component
-import ExplorePage from './ExplorePage'; 
+import ExplorePage from './ExplorePage';
 
 
 const MainPage = () => {
     const [userRole, setUserRole] = useState('Student');
-    const [userid,setUserid] = useState(localStorage.getItem("user-id"));
+    const [userid, setUserid] = useState(localStorage.getItem("user-id"));
     const [isLoading, setIsLoading] = useState(true);
     const [active, setActive] = useState('home');
     const [ai, setAi] = useState(false);
     const [component, setComponent] = useState('home');
     const location = useLocation();
-    const activecomp= location.state;
+    const activecomp = location.state;
     const navigate = useNavigate();
 
     useEffect(() => {
         console.log(activecomp);
-        setComponent(activecomp?activecomp:"home");
-    },[activecomp])
+        setComponent(activecomp ? activecomp : "home");
+    }, [activecomp])
 
     // 3. Add the 'Explore' item to your navigation array
     const navItems = [
@@ -37,41 +37,36 @@ const MainPage = () => {
         { id: 'ai', icon: <FiCpu />, label: 'AI' },
         { id: 'profile', icon: <FiUser />, label: 'Profile' },
     ];
-    
+
     // Simulate data fetching
     useEffect(() => {
-        setIsLoading(true);
-        setUserRole(localStorage.getItem("role")?localStorage.getItem("role"):"student");
+        setUserRole(localStorage.getItem("role") ? localStorage.getItem("role") : "student");
         setUserid(localStorage.getItem("user-id"));
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 2500);
 
-        return () => clearTimeout(timer);
     }, [userRole]);
 
     useEffect(() => {
         const role = localStorage.getItem("role");
         const userid = localStorage.getItem("user-id");
         const jwt = localStorage.getItem("jwt");
-        if(!role || !userid || !jwt){
+        if (!role || !userid || !jwt) {
             navigate("/");
         }
-    },[])
+    }, [])
 
-    
+
 
     return (
         <div className="main-page-layout">
             <TopNav />
 
-            
+
 
             <main className="main-content">
                 {component === "home" ? userRole === 'Student' ? (
-                    <StudentDashboard isLoading={isLoading} />
+                    <StudentDashboard />
                 ) : (
-                    <TeacherDashboard isLoading={isLoading} />
+                    <TeacherDashboard />
                 ) : null}
                 {component === "analytics" ? <AnalyticsPage /> : null}
                 {/* 4. Add the rendering logic for the ExplorePage */}

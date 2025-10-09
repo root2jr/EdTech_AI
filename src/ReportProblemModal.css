@@ -1,0 +1,212 @@
+/* --- Use Same Theme Variables --- */
+:root {
+    --bg-color: #f5f5f7;
+    --surface-color: #ffffff;
+    --primary-text-color: #1d1d1f;
+    --secondary-text-color: #6e6e73;
+    --border-color: #e5e5e7;
+    --accent-color: #000000;
+}
+
+/* --- Modal Overlay --- */
+.report-problem-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+    animation: fadeInOverlay 0.3s ease-in-out;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* --- Modal Card --- */
+.report-problem-card {
+    background-color: var(--surface-color);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 550px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideInModal 0.4s ease-out;
+    position: relative;
+    max-height: 90vh; /* Prevent modal from being too tall */
+    overflow-y: auto; /* Allow content to scroll if needed */
+}
+
+@keyframes slideInModal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.report-problem-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.report-problem-header h2 {
+    font-size: 1.8rem;
+    color: var(--primary-text-color);
+    margin: 0 0 0.5rem 0;
+}
+.report-problem-header p {
+    color: var(--secondary-text-color);
+    margin: 0;
+    line-height: 1.5;
+}
+.close-modal-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--secondary-text-color);
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+.close-modal-button:hover {
+    background-color: var(--bg-color);
+}
+
+/* --- Form Styles --- */
+.report-problem-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-text-color);
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+/* --- Emoji Feedback --- */
+.emoji-feedback-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.emoji-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    width: 100%;
+    transition: background-color 0.2s, transform 0.2s;
+}
+.emoji-option:hover {
+    background-color: var(--bg-color);
+    transform: scale(1.05);
+}
+.emoji-option.selected {
+    background-color: var(--accent-color);
+}
+.emoji-option.selected .emoji-label {
+    color: var(--surface-color);
+}
+.emoji { font-size: 2rem; }
+.emoji-label { font-size: 0.8rem; font-weight: 500; color: var(--secondary-text-color); }
+
+/* --- Textarea & Footer --- */
+.report-problem-form textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    resize: vertical;
+    transition: all 0.2s;
+}
+.report-problem-form textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.report-problem-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.cancel-button, .submit-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+.cancel-button {
+    background-color: var(--surface-color);
+    color: var(--primary-text-color);
+}
+.cancel-button:hover {
+    background-color: var(--bg-color);
+}
+.submit-button {
+    background-color: var(--accent-color);
+    color: var(--surface-color);
+    border-color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.submit-button .loading-spinner {
+    animation: spin 1.5s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ========================================= */
+/* --- RESPONSIVE ENHANCEMENTS --- */
+/* ========================================= */
+@media (max-width: 480px) {
+    .report-problem-card {
+        padding: 1.5rem; /* Reduce padding for more content space */
+    }
+    .report-problem-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Adjust emoji feedback for small screens */
+    .emoji { font-size: 1.5rem; }
+    .emoji-label { font-size: 0.7rem; }
+    .emoji-feedback-container { gap: 0.25rem; }
+    .emoji-option { padding: 0.5rem 0.25rem; }
+
+    /* Stack footer buttons vertically */
+    .report-problem-footer {
+        flex-direction: column-reverse; /* Puts primary button on bottom */
+        align-items: stretch; /* Makes buttons full-width */
+        gap: 0.75rem;
+    }
+    .cancel-button, .submit-button {
+        width: 100%;
+        justify-content: center; /* Center text/icon in button */
+    }
+}
+

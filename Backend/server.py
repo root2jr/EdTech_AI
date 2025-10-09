@@ -16,9 +16,6 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
 import yagmail
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 load_dotenv()
 app = FastAPI()
@@ -43,6 +40,7 @@ classes = Database["classes"]
 Analytics = Database["Analytics"]
 collection = Database["Topic-Details"]
 details = Database["Topic-Content"]
+reports = Database["Reports"]
 
 
 class Login(BaseModel):
@@ -113,7 +111,7 @@ async def handle_register(data:Register):
                           return {"message": "User Already Registered With This Student ID."}
                       password = pass_context.hash(data.password)
                       user_id = generate_class_id()
-                      add_user = await login.insert_one({"email":data.email,"username": data.username, "password": password, "role": data.role, "school_id": data.schoolid ,"user_id": user_id,"student_id":data.studentid,"joined":data.joined})
+                      add_user = await login.insert_one({"email":data.email,"username": data.username, "password": password, "role": data.role, "school_id": data.schoolid ,"user_id": user_id,"student_id":data.studentid,"joined":data.joined, "push_notifications": True})
                       return {"message": "User Registered Sucessfully"}
                 if not saved:
                    return {"message": "Invalid Student id."}
@@ -127,7 +125,7 @@ async def handle_register(data:Register):
                           return {"message": "User Already Registered With This Student ID."}
                       password = pass_context.hash(data.password)
                       user_id = generate_class_id()                      
-                      add_user = await login.insert_one({"email":data.email,"username": data.username, "password": password, "role": data.role, "school_id": data.schoolid, "user_id": user_id, "staff_id":data.studentid,"joined":data.joined})
+                      add_user = await login.insert_one({"email":data.email,"username": data.username, "password": password, "role": data.role, "school_id": data.schoolid, "user_id": user_id, "staff_id":data.studentid,"joined":data.joined, "push_notifications": True})
                       return {"message": "User Registered Sucessfully"}
                 if not saved:
                    return {"message": "Invalid Student id."}
@@ -478,6 +476,12 @@ notification_mail = os.getenv("email")
 notification_password = os.getenv("password")
 
 
+def send_email(to_email: str, subject: str, body: str):
+    email = notification_mail
+    password = notification_password  
+    ya = yagmail.SMTP(email,password)
+    send = ya.send(to=to_email, subject=subject, contents=body)
+    return True
 
         
         
@@ -492,6 +496,10 @@ async def handle_join_class(data:Joinclass):
     if user["school_id"] == targetclass["schoolid"]:
         response = await classes.find_one_and_update({"classId": data.class_id},{"$addToSet": {"students":data.user_id}} )
         response2 = await login.find_one_and_update({"user_id": data.user_id},{"$addToSet": {"classes":data.class_id}} )
+        if staff["push_notifications"]:
+            send_email(staff["email"],"New Student Joined Your Class!",f"New Student Joined Your Class! \nClass ID: '{data.class_id}' \nClass-Name: '{targetclass["className"]}' \nStudent Name: '{user["username"]}'")
+        if user["push_notifications"]:
+            send_email(user["email"],"Joined New Class!",f"Your New Class Details! \nClass ID: '{data.class_id}' \nClass-Name: '{targetclass["className"]}'")
         return {"message": "Class Joined Successfully"}
     else:
         return {"message": "Unable to Join class"}
@@ -650,3 +658,66 @@ async def fetch_class_details(data:Fetch_Class_Details):
     completion_rate = (completed_students / total_students) * 100
     student_progress = await fetch_student_progress(response["students"],total_lessons)
     return {"id": response["students"], "name": students, "enrolled_students": total_students, "average_completion_rate": completion_rate, "performance": student_progress}
+
+
+class LeaveCLass(BaseModel):
+    user_id: str
+    class_id: str
+
+
+@app.post("/leave-class")
+async def handle_leave_class(data:LeaveCLass):
+    response = await classes.find_one_and_update({"classId": data.class_id}, {"$pull": {"students":data.user_id}},return_document=True)
+    staff = await login.find_one({"user_id": response["creator"]})
+    user = await login.find_one({"user_id": data.user_id})
+    send_email(staff["email"],"A student has left your class!",f"Student and Class Details! \nClass ID: '{data.class_id}' \nStudent-Name: '{user["username"]}'")
+    response2 = await login.find_one_and_update({"user_id": data.user_id},{"$pull": {"classes":data.class_id}} )
+    return {"message": "Class Exited Successfully"}
+    
+class NewUserName(BaseModel):
+    user_id: str
+    NewUserName: str    
+    
+    
+@app.post("/change-username")
+async def handle_change_username(data:NewUserName):
+    
+    response = await login.find_one_and_update({"user_id": data.user_id},{"$set":{"username": data.NewUserName} })
+    return {"message": "Username changed Succesfully."}
+
+class Notification_Toggle(BaseModel):
+    user_id: str
+    push_notifications: bool
+
+@app.post("/togglenotifications")
+async def handle_notification_toggle(data:Notification_Toggle):
+    response = await login.find_one_and_update({"user_id": data.user_id},{"$set":{"push_notifications": data.push_notifications}},upsert=True)
+    return {"message": "Notification toggled Successfully"}
+
+
+class ChangePass(BaseModel):
+    user_id: str
+    current_pass: str
+    new_pass: str
+
+@app.post("/change-password")
+async def handle_change_password(data:ChangePass):
+    response = await login.find_one({"user_id":data.user_id})
+    check = pass_context.verify(data.current_pass, response["password"])
+    if check:
+        hash_new_pass = pass_context.hash(data.new_pass)
+        change = await login.find_one_and_update({"user_id": data.user_id},{"$set": {"password": hash_new_pass}})
+    else:
+        return {"message": "Invalid current password"}
+    
+
+class handleReport(BaseModel):
+    user_id: str
+    report: str
+    class_id: str
+    experience: str
+
+@app.post("/report")
+async def handle_report(data:handleReport):
+    response = await reports.insert_one({"user_id": data.user_id, "class_id": data.class_id, "report": data.report, "experience": data.experience})
+    return {"message": "Report Added Successfully"}

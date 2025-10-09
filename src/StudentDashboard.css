@@ -232,3 +232,88 @@
     color: var(--secondary-text-color);
     font-weight: 500;
 }
+/* Make the card a positioning context */
+.impressive-content-card {
+    position: relative;
+    /* ... your existing styles for this card ... */
+}
+
+/* A new wrapper to make the main content clickable */
+.card-clickable-area {
+    cursor: pointer;
+}
+
+/* --- Options Menu Styling --- */
+.card-options-container {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 5; /* Ensure it's above the thumbnail */
+}
+
+.card-options-button {
+    background: rgba(245, 245, 247, 0.7); /* --bg-color with transparency */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary-text-color);
+    transition: background-color 0.2s ease;
+}
+
+.card-options-button:hover {
+    background-color: rgba(245, 245, 247, 0.9);
+}
+
+.card-options-button svg {
+    font-size: 1.25rem;
+}
+
+/* The dropdown menu itself */
+.card-options-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem); /* Position it right below the button */
+    right: 0;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    width: 220px;
+    padding: 0.5rem 0;
+    z-index: 10;
+    animation: fadeInMenu 0.2s ease-out;
+}
+
+@keyframes fadeInMenu {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Individual menu items */
+.menu-option {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.menu-option:hover {
+    background-color: var(--bg-color);
+}
+
+/* Special styling for the "Leave Class" option */
+.menu-option.destructive {
+    color: #ef4444; /* A standard destructive action red */
+}
+
+.menu-option.destructive:hover {
+    background-color: #feebeb; /* A light red background on hover */
+    color: #b91c1c;
+}

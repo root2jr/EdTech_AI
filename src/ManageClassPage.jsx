@@ -40,7 +40,7 @@ const ManageClassPage = () => {
                     // API doesn't provide these, so we'll use placeholders or the classId.
                     className: `Class Overview: ${classId}`,
                     subject: 'Student Performance Analytics',
-                    avgPerformance: apiData.average_completion_rate,
+                    avgPerformance: (apiData.average_completion_rate).toFixed(0),
                     // Map the 'performance' array from the API to the 'students' array format.
                     students: apiData.performance.map(perf => {
                         // The API response has separate 'id' and 'name' arrays.
@@ -62,7 +62,7 @@ const ManageClassPage = () => {
                             name: studentName,
                             // Generate a consistent avatar using the student's ID
                             avatar: `https://i.pravatar.cc/40?u=${perf.user_id}`,
-                            progress: perf.progress_percent,
+                            progress: (perf.progress_percent).toFixed(0),
                             attentionScore: attentionScore,
                         };
                     })

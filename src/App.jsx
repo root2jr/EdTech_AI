@@ -17,6 +17,10 @@ import ClassDetailsPage from './ClassDetailsPage'
 import TeacherAnalyticsPage from './TeacherAnalyticsPage'
 import ExplorePage from './ExplorePage'
 import ExploreTopicPage from './ExploreTopicPage'
+import EditProfilePage from './EditProfilePage'
+import NotificationsPage from './NotificationsPage'
+import HelpAndSupportPage from './HelpAndSupportPage'
+import SecurityPage from './SecurityPage'
 
 function App() {
 
@@ -38,6 +42,10 @@ function App() {
         <Route path="/class/:classId" element={<ClassDetailsPage />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/explore/:topicId" element={<ExploreTopicPage />} />
+        <Route path="/editprofile" element={<EditProfilePage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/help" element={<HelpAndSupportPage />} />
+        <Route path="/security" element={<SecurityPage />} />
       </Routes>
     </BrowserRouter>
   )

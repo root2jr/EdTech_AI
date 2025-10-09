@@ -43,21 +43,30 @@ const AIChatPage = () => {
     useEffect(() => {
         const memory = JSON.parse(localStorage.getItem("memory"));
         if (memory) {
+            console.log(memory);
             setMessages(memory);
             setMemoryContext(memory);
         }
+        else {
+            setMessages(prev => [...prev, {
+                id: Date.now(),
+                sender: 'ai',
+                parts: [{ type: 'text', content: "Hey! How can i help you?" }]
+            }])
+        }
+
 
     }, [])
 
 
-   
+
 
     // This effect handles auto-scrolling to the latest message
     useEffect(() => {
         if (chatHistoryRef.current) {
             chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
         }
-         if (messages.length > 0) {
+        if (messages.length > 0) {
             localStorage.setItem("memory", JSON.stringify(messages));
             setMemoryContext(messages.slice(-6));
         }

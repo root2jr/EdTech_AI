@@ -22,7 +22,7 @@ app = FastAPI()
 pass_context = CryptContext(schemes="bcrypt", deprecated="auto")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["https://edtechx-ai.netlify.app","http://localhost:5173"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
